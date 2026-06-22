@@ -16,8 +16,26 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'https://payment-recept.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173'
+].filter(Boolean);
+
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, 'https://payment-recept.vercel.app', 'http://localhost:3000', 'http://localhost:5173'].filter(Boolean),
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    
+    const isAllowed = allowedOrigins.includes(origin) || 
+                      /^https:\/\/ktc-private-paymentcrm.*\.vercel\.app$/.test(origin);
+                      
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(helmet({
