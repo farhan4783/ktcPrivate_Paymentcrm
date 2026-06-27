@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { COURSES } from '../utils/constants';
 import API from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import { 
   FilePlus, 
   Search, 
@@ -12,7 +14,8 @@ import {
   Hash,
   Loader2,
   CheckCircle2,
-  ArrowLeft
+  ArrowLeft,
+  Info
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
@@ -20,6 +23,7 @@ import ReceiptPreview from '../components/ui/ReceiptPreview';
 import { toast } from 'react-hot-toast';
 
 const ReceiptGenerator = () => {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [generatedReceipt, setGeneratedReceipt] = useState(null);
   const [formData, setFormData] = useState({
@@ -65,6 +69,20 @@ const ReceiptGenerator = () => {
       setLoading(false);
     }
   };
+
+  if (user?.role === 'viewer') {
+    return (
+      <div className="max-w-md mx-auto text-center space-y-4 py-20 bg-white p-10 rounded-[32px] border border-gray-100 shadow-soft">
+        <div className="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-3xl flex items-center justify-center mx-auto">
+          <Info size={32} />
+        </div>
+        <h3 className="text-xl font-black text-textPrimary tracking-tight">Read-Only Access</h3>
+        <p className="text-sm text-textSecondary leading-relaxed">
+          You are logged in with a read-only viewer account. You can view all records and receipts, but you do not have permission to generate new ones.
+        </p>
+      </div>
+    );
+  }
 
   if (generatedReceipt) {
     return (
@@ -164,11 +182,7 @@ const ReceiptGenerator = () => {
                     onChange={handleChange}
                     className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 pl-11 pr-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer"
                   >
-                    <option>Web Development</option>
-                    <option>Data Science</option>
-                    <option>UI/UX Design</option>
-                    <option>Full Stack Development</option>
-                    <option>Digital Marketing</option>
+                    {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
               </div>

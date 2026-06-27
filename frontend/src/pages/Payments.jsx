@@ -14,10 +14,12 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 import { cn } from '../utils/cn';
 import ReceiptPreview from '../components/ui/ReceiptPreview';
 
 const Payments = () => {
+  const { user } = useAuth();
   const [students, setStudents] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -109,6 +111,20 @@ const Payments = () => {
       setSubmitting(false);
     }
   };
+
+  if (user?.role === 'viewer') {
+    return (
+      <div className="max-w-md mx-auto text-center space-y-4 py-20 bg-white p-10 rounded-[32px] border border-gray-100 shadow-soft">
+        <div className="w-16 h-16 bg-amber-500/10 text-amber-500 rounded-3xl flex items-center justify-center mx-auto">
+          <Info size={32} />
+        </div>
+        <h3 className="text-xl font-black text-textPrimary tracking-tight">Read-Only Access</h3>
+        <p className="text-sm text-textSecondary leading-relaxed">
+          You are logged in with a read-only viewer account. You can view all payments and student profiles, but you do not have permission to record new payments.
+        </p>
+      </div>
+    );
+  }
 
   if (generatedReceipt) {
     return (

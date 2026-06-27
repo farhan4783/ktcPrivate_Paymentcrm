@@ -34,6 +34,7 @@ const adminOnly = (req, res, next) => {
   }
 };
 
+// Staff and admin can read AND write
 const staffAccess = (req, res, next) => {
   if (req.user && (req.user.role === 'staff' || req.user.role === 'admin')) {
     next();
@@ -42,4 +43,13 @@ const staffAccess = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly, staffAccess };
+// Viewer, staff, and admin can read (viewer is read-only)
+const viewerAccess = (req, res, next) => {
+  if (req.user && (req.user.role === 'viewer' || req.user.role === 'staff' || req.user.role === 'admin')) {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied' });
+  }
+};
+
+module.exports = { protect, adminOnly, staffAccess, viewerAccess };

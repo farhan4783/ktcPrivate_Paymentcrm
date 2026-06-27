@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import API from '../services/api';
+import { COURSES } from '../utils/constants';
 import { 
   ArrowLeft, 
   Phone, 
@@ -17,28 +18,64 @@ import {
   ShieldCheck,
   CalendarDays,
   History,
-  MessageCircle
+  MessageCircle,
+  Trash2,
+  AlertTriangle,
+  Save
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { cn } from '../utils/cn';
 import { format } from 'date-fns';
 import { toast } from 'react-hot-toast';
 import ReceiptPreview from '../components/ui/ReceiptPreview';
+import { useAuth } from '../context/AuthContext';
 
 const StudentProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
+  const isViewer = currentUser?.role === 'viewer';
+
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Modals
   const [showAddEnrollment, setShowAddEnrollment] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [showEditStudent, setShowEditStudent] = useState(false);
+  const [showEditEnrollment, setShowEditEnrollment] = useState(false);
+  const [showDeleteEnrollment, setShowDeleteEnrollment] = useState(false);
+  const [showEditPayment, setShowEditPayment] = useState(false);
+  const [showDeletePayment, setShowDeletePayment] = useState(false);
+
+  // Data for modals
   const [selectedPaymentData, setSelectedPaymentData] = useState(null);
+  const [selectedEnrollment, setSelectedEnrollment] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null);
   const [newEnrollment, setNewEnrollment] = useState({ courseName: 'Web Development', totalFees: '' });
+  
+  const [editStudentData, setEditStudentData] = useState({ name: '', phone: '', email: '' });
+  const [editEnrollmentData, setEditEnrollmentData] = useState({ courseName: '', totalFees: '' });
+  const [editPaymentData, setEditPaymentData] = useState({ amountPaid: '', paymentMode: '', transactionId: '' });
 
   useEffect(() => {
     fetchStudentProfile();
   }, [id]);
 
+  const fetchStudentProfile = async () => {
+    try {
+      const res = await API.get(`/students/${id}`);
+      setStudent(res.data);
+    } catch (err) {
+      console.error('Failed to fetch student profile', err);
+      toast.error('Could not load student profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ========== Receipt Preview ==========
   const handleViewReceipt = (payment) => {
     const enrollment = student.enrollments?.find(e => e._id === payment.enrollmentId);
     setSelectedPaymentData({
@@ -56,30 +93,130 @@ const StudentProfile = () => {
     setShowReceiptModal(true);
   };
 
-  const fetchStudentProfile = async () => {
-    try {
-      const res = await API.get(`/students/${id}`);
-      setStudent(res.data);
-    } catch (err) {
-      console.error('Failed to fetch student profile', err);
-      toast.error('Could not load student profile');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // ========== Add Enrollment ==========
   const handleAddEnrollment = async (e) => {
     e.preventDefault();
     try {
       await API.post(`/students/${id}/enroll`, newEnrollment);
       toast.success('New course added successfully!');
       setShowAddEnrollment(false);
+      setNewEnrollment({ courseName: 'Web Development', totalFees: '' });
       fetchStudentProfile();
     } catch (err) {
       toast.error('Failed to add new course');
     }
   };
 
+  // ========== Edit Student ==========
+  const openEditStudent = () => {
+    setEditStudentData({ name: student.name, phone: student.phone, email: student.email });
+    setShowEditStudent(true);
+  };
+
+  const handleEditStudent = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await API.put(`/students/${id}`, editStudentData);
+      toast.success('Student info updated!');
+      setShowEditStudent(false);
+      fetchStudentProfile();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // ========== Edit Enrollment ==========
+  const openEditEnrollment = (enrollment) => {
+    setSelectedEnrollment(enrollment);
+    setEditEnrollmentData({ courseName: enrollment.courseName, totalFees: enrollment.totalFees });
+    setShowEditEnrollment(true);
+  };
+
+  const handleEditEnrollment = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await API.put(`/students/${id}/enrollments/${selectedEnrollment._id}`, editEnrollmentData);
+      toast.success('Enrollment updated!');
+      setShowEditEnrollment(false);
+      fetchStudentProfile();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update enrollment');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // ========== Delete Enrollment ==========
+  const openDeleteEnrollment = (enrollment) => {
+    setSelectedEnrollment(enrollment);
+    setShowDeleteEnrollment(true);
+  };
+
+  const handleDeleteEnrollment = async () => {
+    setSubmitting(true);
+    try {
+      await API.delete(`/students/${id}/enrollments/${selectedEnrollment._id}`);
+      toast.success('Enrollment deleted');
+      setShowDeleteEnrollment(false);
+      fetchStudentProfile();
+    } catch (err) {
+      toast.error('Failed to delete enrollment');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // ========== Edit Payment ==========
+  const openEditPayment = (payment) => {
+    setSelectedPayment(payment);
+    setEditPaymentData({
+      amountPaid: payment.amountPaid,
+      paymentMode: payment.paymentMode,
+      transactionId: payment.transactionId || ''
+    });
+    setShowEditPayment(true);
+  };
+
+  const handleEditPayment = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await API.put(`/students/${id}/payments/${selectedPayment._id}`, editPaymentData);
+      toast.success('Payment updated!');
+      setShowEditPayment(false);
+      fetchStudentProfile();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update payment');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // ========== Delete Payment ==========
+  const openDeletePayment = (payment) => {
+    setSelectedPayment(payment);
+    setShowDeletePayment(true);
+  };
+
+  const handleDeletePayment = async () => {
+    setSubmitting(true);
+    try {
+      await API.delete(`/students/${id}/payments/${selectedPayment._id}`);
+      toast.success('Payment deleted');
+      setShowDeletePayment(false);
+      fetchStudentProfile();
+    } catch (err) {
+      toast.error('Failed to delete payment');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // ========== Render ==========
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -110,11 +247,13 @@ const StudentProfile = () => {
           </Link>
           <h2 className="text-4xl font-black text-textPrimary tracking-tight">Student Details</h2>
         </div>
-        <div className="flex gap-3">
-          <Button onClick={() => setShowAddEnrollment(true)} className="gap-2 rounded-2xl shadow-xl shadow-[#0EA5E9]/20">
-            <Plus size={18} /> Enroll in New Course
-          </Button>
-        </div>
+        {!isViewer && (
+          <div className="flex gap-3">
+            <Button onClick={() => setShowAddEnrollment(true)} className="gap-2 rounded-2xl shadow-xl shadow-[#0EA5E9]/20">
+              <Plus size={18} /> Enroll in New Course
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
@@ -122,6 +261,17 @@ const StudentProfile = () => {
         <div className="lg:col-span-4">
           <div className="bg-white p-5 rounded-[24px] border border-gray-100 shadow-soft flex flex-col items-center text-center relative overflow-hidden h-full">
             <div className="absolute top-0 left-0 w-full h-16 bg-[#0EA5E9]/5 -z-0"></div>
+            
+            {/* Edit button */}
+            {!isViewer && (
+              <button 
+                onClick={openEditStudent}
+                className="absolute top-4 right-4 z-10 p-2 bg-white/80 hover:bg-[#0EA5E9]/10 text-gray-400 hover:text-[#0EA5E9] rounded-xl transition-all border border-gray-100"
+                title="Edit Student Info"
+              >
+                <Edit3 size={14} />
+              </button>
+            )}
             
             <div className="relative z-10 mb-3">
               <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-white shadow-lg flex items-center justify-center bg-[#0EA5E9] text-white font-black text-2xl rotate-1">
@@ -213,6 +363,26 @@ const StudentProfile = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {student.enrollments?.map((e) => (
                 <div key={e._id} className="bg-white p-5 rounded-[28px] border border-gray-100 shadow-soft group hover:shadow-xl hover:translate-y-[-4px] transition-all relative overflow-hidden">
+                  {/* Edit/Delete buttons on enrollment card */}
+                  {!isViewer && (
+                    <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => openEditEnrollment(e)}
+                        className="p-1.5 bg-white hover:bg-amber-50 text-gray-400 hover:text-amber-500 rounded-lg transition-all border border-gray-100 shadow-sm"
+                        title="Edit Enrollment"
+                      >
+                        <Edit3 size={12} />
+                      </button>
+                      <button 
+                        onClick={() => openDeleteEnrollment(e)}
+                        className="p-1.5 bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-lg transition-all border border-gray-100 shadow-sm"
+                        title="Delete Enrollment"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  )}
+
                   <div className="flex justify-between items-start mb-4">
                     <div className="w-9 h-9 bg-[#0EA5E9]/10 rounded-xl flex items-center justify-center text-[#0EA5E9] group-hover:scale-110 transition-transform">
                       <BookOpen size={16} />
@@ -235,7 +405,11 @@ const StudentProfile = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-50">
+                  <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-50">
+                    <div className="space-y-0.5">
+                      <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Total</p>
+                      <p className="text-[13px] font-black text-textPrimary tracking-tight">₹{e.totalFees.toLocaleString()}</p>
+                    </div>
                     <div className="space-y-0.5">
                       <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest">Paid</p>
                       <p className="text-[13px] font-black text-secondary tracking-tight">₹{e.paidAmount.toLocaleString()}</p>
@@ -249,16 +423,7 @@ const StudentProfile = () => {
                   {e.balance > 0 && (
                     <div className="mt-4 pt-3 border-t border-gray-50 flex flex-col gap-2">
                       <a 
-                        href={`https://wa.me/${student.phone?.length === 10 ? '91' + student.phone : student.phone}?text=${encodeURIComponent(`Hi ${student.name},
-
-Greetings from Kode to Career.
-
-This is a reminder that you have enrolled in our ${e.courseName} course. The total course fee is ₹${(e.paidAmount + e.balance).toLocaleString()}, out of which ₹${e.paidAmount.toLocaleString()} has already been paid. Your remaining pending amount is ₹${e.balance.toLocaleString()}.
-
-Kindly complete the pending payment at your earliest convenience. Please feel free to contact us if you need any assistance.
-
-Thank you.
-Team Kode to Career`)}`}
+                        href={`https://wa.me/${student.phone?.length === 10 ? '91' + student.phone : student.phone}?text=${encodeURIComponent(`Hi ${student.name},\n\nGreetings from Kode to Career.\n\nThis is a reminder that you have enrolled in our ${e.courseName} course. The total course fee is ₹${(e.paidAmount + e.balance).toLocaleString()}, out of which ₹${e.paidAmount.toLocaleString()} has already been paid. Your remaining pending amount is ₹${e.balance.toLocaleString()}.\n\nKindly complete the pending payment at your earliest convenience. Please feel free to contact us if you need any assistance.\n\nThank you.\nTeam Kode to Career`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-colors text-[10px] font-black uppercase tracking-widest"
@@ -297,13 +462,14 @@ Team Kode to Career`)}`}
                     <th className="pb-4 px-4">Course Ref</th>
                     <th className="pb-4 px-4">Amount</th>
                     <th className="pb-4 px-4">Channel</th>
-                    <th className="pb-4 px-4 text-right">Receipt</th>
+                    <th className="pb-4 px-4">Txn ID</th>
+                    <th className="pb-4 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {student.payments?.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="py-12 text-center text-textSecondary font-bold text-xs italic">No records.</td>
+                      <td colSpan="6" className="py-12 text-center text-textSecondary font-bold text-xs italic">No records.</td>
                     </tr>
                   ) : student.payments?.map((payment) => {
                     const enrollment = student.enrollments?.find(e => e._id === payment.enrollmentId);
@@ -332,13 +498,36 @@ Team Kode to Career`)}`}
                             <span className="text-[9px] font-bold text-textSecondary uppercase tracking-widest">{payment.paymentMode}</span>
                           </div>
                         </td>
+                        <td className="py-3 px-4">
+                          <span className="text-[10px] font-bold text-gray-400">{payment.transactionId || '—'}</span>
+                        </td>
                         <td className="py-3 px-4 text-right">
-                          <button 
-                            onClick={() => handleViewReceipt(payment)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-white text-textPrimary border border-gray-100 hover:border-[#0EA5E9] hover:text-[#0EA5E9] transition-all shadow-sm"
-                          >
-                            <DownloadCloud size={14} /> PDF
-                          </button>
+                          <div className="flex items-center justify-end gap-1">
+                            {!isViewer && (
+                              <>
+                                <button 
+                                  onClick={() => openEditPayment(payment)}
+                                  className="p-1.5 text-gray-400 hover:text-amber-500 hover:bg-amber-50 rounded-lg transition-all"
+                                  title="Edit Payment"
+                                >
+                                  <Edit3 size={13} />
+                                </button>
+                                <button 
+                                  onClick={() => openDeletePayment(payment)}
+                                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                  title="Delete Payment"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              </>
+                            )}
+                            <button 
+                              onClick={() => handleViewReceipt(payment)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest bg-white text-textPrimary border border-gray-100 hover:border-[#0EA5E9] hover:text-[#0EA5E9] transition-all shadow-sm"
+                            >
+                              <DownloadCloud size={14} /> PDF
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -350,6 +539,8 @@ Team Kode to Career`)}`}
         </div>
       </div>
 
+      {/* ==================== MODALS ==================== */}
+
       {/* MODAL: Receipt Preview */}
       {showReceiptModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-300">
@@ -360,7 +551,6 @@ Team Kode to Career`)}`}
             >
               <X size={24} />
             </button>
-            
             <div className="pt-8">
               <ReceiptPreview data={selectedPaymentData} />
             </div>
@@ -372,10 +562,7 @@ Team Kode to Career`)}`}
       {showAddEnrollment && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-white rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-in zoom-in-95 duration-300 border border-white">
-            <button 
-              onClick={() => setShowAddEnrollment(false)} 
-              className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 z-10"
-            >
+            <button onClick={() => setShowAddEnrollment(false)} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 z-10">
               <X size={20} />
             </button>
             
@@ -392,13 +579,7 @@ Team Kode to Career`)}`}
                     onChange={(e) => setNewEnrollment({ ...newEnrollment, courseName: e.target.value })}
                     className="w-full bg-gray-50 border border-gray-100 rounded-[20px] py-3.5 pl-12 pr-6 text-sm font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none transition-all appearance-none cursor-pointer"
                   >
-                    <option>Web Development</option>
-                    <option>Data Science</option>
-                    <option>UI/UX Design</option>
-                    <option>Full Stack Development</option>
-                    <option>Digital Marketing</option>
-                    <option>Python Programming</option>
-                    <option>Android App Development</option>
+                    {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
               </div>
@@ -422,6 +603,143 @@ Team Kode to Career`)}`}
                 Confirm Enrollment
               </Button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Edit Student Info */}
+      {showEditStudent && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[32px] w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-300 border border-gray-100">
+            <button onClick={() => setShowEditStudent(false)} className="absolute top-5 right-5 p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400"><X size={18} /></button>
+            <div className="flex flex-col items-center text-center mb-5">
+              <div className="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mb-3"><Edit3 size={24} /></div>
+              <h3 className="text-lg font-black text-textPrimary tracking-tight">Edit Student Info</h3>
+            </div>
+            <form onSubmit={handleEditStudent} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Name</label>
+                <input required value={editStudentData.name} onChange={(e) => setEditStudentData({...editStudentData, name: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Phone</label>
+                  <input required value={editStudentData.phone} onChange={(e) => setEditStudentData({...editStudentData, phone: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email</label>
+                  <input required type="email" value={editStudentData.email} onChange={(e) => setEditStudentData({...editStudentData, email: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none" />
+                </div>
+              </div>
+              <Button type="submit" disabled={submitting} className="w-full py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest gap-2 shadow-xl shadow-amber-500/20 mt-2 bg-amber-500 hover:bg-amber-600">
+                {submitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                {submitting ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Edit Enrollment */}
+      {showEditEnrollment && selectedEnrollment && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[32px] w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-300 border border-gray-100">
+            <button onClick={() => setShowEditEnrollment(false)} className="absolute top-5 right-5 p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400"><X size={18} /></button>
+            <div className="flex flex-col items-center text-center mb-5">
+              <div className="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mb-3"><BookOpen size={24} /></div>
+              <h3 className="text-lg font-black text-textPrimary tracking-tight">Edit Enrollment</h3>
+            </div>
+            <form onSubmit={handleEditEnrollment} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Course</label>
+                <select value={editEnrollmentData.courseName} onChange={(e) => setEditEnrollmentData({...editEnrollmentData, courseName: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none appearance-none cursor-pointer">
+                  {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Total Fees (₹)</label>
+                <input required type="number" value={editEnrollmentData.totalFees} onChange={(e) => setEditEnrollmentData({...editEnrollmentData, totalFees: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none" />
+              </div>
+              <p className="text-[10px] text-gray-400 font-bold bg-gray-50 p-3 rounded-xl">⚠️ Changing the total fees will recalculate the balance automatically.</p>
+              <Button type="submit" disabled={submitting} className="w-full py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest gap-2 shadow-xl shadow-amber-500/20 mt-2 bg-amber-500 hover:bg-amber-600">
+                {submitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                {submitting ? 'Saving...' : 'Update Enrollment'}
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Delete Enrollment Confirm */}
+      {showDeleteEnrollment && selectedEnrollment && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-in zoom-in-95 duration-300 border border-gray-100 text-center">
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4"><AlertTriangle size={32} /></div>
+            <h3 className="text-lg font-black text-textPrimary tracking-tight mb-1">Delete Enrollment?</h3>
+            <p className="text-[12px] text-textSecondary mb-1">This will delete <strong>{selectedEnrollment.courseName}</strong> and all payments & receipts linked to it.</p>
+            <p className="text-[10px] text-red-500 font-black uppercase tracking-widest mb-6">This action cannot be undone</p>
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={() => setShowDeleteEnrollment(false)} className="flex-1 py-3 rounded-2xl">Cancel</Button>
+              <Button onClick={handleDeleteEnrollment} disabled={submitting} className="flex-1 py-3 rounded-2xl bg-red-500 hover:bg-red-600 shadow-xl shadow-red-500/20 gap-2">
+                {submitting ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />}
+                {submitting ? 'Deleting...' : 'Delete'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Edit Payment */}
+      {showEditPayment && selectedPayment && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[32px] w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-300 border border-gray-100">
+            <button onClick={() => setShowEditPayment(false)} className="absolute top-5 right-5 p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400"><X size={18} /></button>
+            <div className="flex flex-col items-center text-center mb-5">
+              <div className="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mb-3"><CreditCard size={24} /></div>
+              <h3 className="text-lg font-black text-textPrimary tracking-tight">Edit Payment</h3>
+            </div>
+            <form onSubmit={handleEditPayment} className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Amount Paid (₹)</label>
+                <input required type="number" value={editPaymentData.amountPaid} onChange={(e) => setEditPaymentData({...editPaymentData, amountPaid: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none" />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Payment Mode</label>
+                <select value={editPaymentData.paymentMode} onChange={(e) => setEditPaymentData({...editPaymentData, paymentMode: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none appearance-none cursor-pointer">
+                  <option value="UPI">UPI</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Bank">Bank</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Transaction ID</label>
+                <input value={editPaymentData.transactionId} onChange={(e) => setEditPaymentData({...editPaymentData, transactionId: e.target.value})} placeholder="Ref no. / UTR no." className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none" />
+              </div>
+              <p className="text-[10px] text-gray-400 font-bold bg-gray-50 p-3 rounded-xl">⚠️ Changing the amount will recalculate the enrollment balance and update the receipt.</p>
+              <Button type="submit" disabled={submitting} className="w-full py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest gap-2 shadow-xl shadow-amber-500/20 mt-2 bg-amber-500 hover:bg-amber-600">
+                {submitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                {submitting ? 'Saving...' : 'Update Payment'}
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Delete Payment Confirm */}
+      {showDeletePayment && selectedPayment && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white rounded-[32px] w-full max-w-md p-8 shadow-2xl relative animate-in zoom-in-95 duration-300 border border-gray-100 text-center">
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4"><AlertTriangle size={32} /></div>
+            <h3 className="text-lg font-black text-textPrimary tracking-tight mb-1">Delete Payment?</h3>
+            <p className="text-[12px] text-textSecondary mb-1">This will delete the <strong>₹{selectedPayment.amountPaid?.toLocaleString()}</strong> payment and its receipt. The enrollment balance will be recalculated.</p>
+            <p className="text-[10px] text-red-500 font-black uppercase tracking-widest mb-6">This action cannot be undone</p>
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={() => setShowDeletePayment(false)} className="flex-1 py-3 rounded-2xl">Cancel</Button>
+              <Button onClick={handleDeletePayment} disabled={submitting} className="flex-1 py-3 rounded-2xl bg-red-500 hover:bg-red-600 shadow-xl shadow-red-500/20 gap-2">
+                {submitting ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />}
+                {submitting ? 'Deleting...' : 'Delete'}
+              </Button>
+            </div>
           </div>
         </div>
       )}

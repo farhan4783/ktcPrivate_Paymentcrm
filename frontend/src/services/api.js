@@ -22,16 +22,36 @@ export const studentAPI = {
   getStudents: () => API.get('/students'),
   getStudentById: (id) => API.get(`/students/${id}`),
   createStudent: (data) => API.post('/students', data),
+  updateStudent: (id, data) => API.put(`/students/${id}`, data),
+  deleteStudent: (id) => API.delete(`/students/${id}`),
+};
+
+export const enrollmentAPI = {
+  addEnrollment: (studentId, data) => API.post(`/students/${studentId}/enroll`, data),
+  updateEnrollment: (studentId, enrollmentId, data) => API.put(`/students/${studentId}/enrollments/${enrollmentId}`, data),
+  deleteEnrollment: (studentId, enrollmentId) => API.delete(`/students/${studentId}/enrollments/${enrollmentId}`),
 };
 
 export const paymentAPI = {
   createPayment: (data) => API.post('/payments', data),
   getPayments: (studentId) => API.get(`/payments/${studentId}`),
+  updatePayment: (studentId, paymentId, data) => API.put(`/students/${studentId}/payments/${paymentId}`, data),
+  deletePayment: (studentId, paymentId) => API.delete(`/students/${studentId}/payments/${paymentId}`),
 };
 
 export const receiptAPI = {
   getReceipts: () => API.get('/receipts'),
   getReceiptById: (id) => API.get(`/receipts/${id}`),
+};
+
+export const adminAPI = {
+  getUsers: (status) => API.get(`/admin/users${status ? `?status=${status}` : ''}`),
+  createUser: (data) => API.post('/admin/users', data),
+  updateUser: (id, data) => API.put(`/admin/users/${id}`, data),
+  deleteUser: (id) => API.delete(`/admin/users/${id}`),
+  resetPassword: (id, data) => API.put(`/admin/users/${id}/reset-password`, data),
+  approveUser: (id) => API.put(`/admin/approve/${id}`, {}),
+  rejectUser: (id) => API.put(`/admin/reject/${id}`, {}),
 };
 
 export default API;
