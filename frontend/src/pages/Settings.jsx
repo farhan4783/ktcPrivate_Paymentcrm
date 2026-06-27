@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Building2, 
   FileText, 
@@ -9,21 +9,73 @@ import {
   Save, 
   Phone,
   ShieldCheck,
-  CheckCircle
+  CheckCircle,
+  Loader2
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { cn } from '../utils/cn';
+import API, { settingsAPI } from '../services/api';
+import { toast } from 'react-hot-toast';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('company');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
-    companyName: 'Kode to Career Education Pvt. Ltd.',
-    address: '123, Knowledge Park, Bhopal, Madhya Pradesh - 462023',
-    phone: '+91 70000 12345',
-    upiId: 'kodetocareer@upi',
-    prefix: 'KTC-'
+    companyName: '',
+    address: '',
+    phone: '',
+    upiId: '',
+    receiptPrefix: 'KTC',
+    logoUrl: ''
   });
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    setLoading(true);
+    try {
+      const res = await settingsAPI.getSettings();
+      setFormData({
+        companyName: res.data.companyName || '',
+        address: res.data.address || '',
+        phone: res.data.phone || '',
+        upiId: res.data.upiId || '',
+        receiptPrefix: res.data.receiptPrefix || 'KTC',
+        logoUrl: res.data.logoUrl || ''
+      });
+    } catch (err) {
+      console.error('Failed to load settings', err);
+      toast.error('Failed to load settings from server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const res = await settingsAPI.updateSettings(formData);
+      toast.success('Settings updated successfully!');
+      setFormData({
+        companyName: res.data.companyName || '',
+        address: res.data.address || '',
+        phone: res.data.phone || '',
+        upiId: res.data.upiId || '',
+        receiptPrefix: res.data.receiptPrefix || 'KTC',
+        logoUrl: res.data.logoUrl || ''
+      });
+    } catch (err) {
+      console.error('Failed to save settings', err);
+      toast.error('Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const tabs = [
     { id: 'company', label: 'Company Settings', icon: Building2 },
@@ -31,6 +83,14 @@ const Settings = () => {
     { id: 'payment', label: 'Payment Settings', icon: CreditCard },
     { id: 'system', label: 'System Settings', icon: SettingsIcon },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-[400px] flex items-center justify-center">
+        <Loader2 className="animate-spin text-[#0EA5E9]" size={36} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
@@ -66,18 +126,24 @@ const Settings = () => {
             <p className="text-sm text-textSecondary mt-1">Update your institute details. These details will appear on receipts.</p>
           </div>
 
-          <form className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
               <div className="md:col-span-2 space-y-8">
-                <Input 
-                  label="Company Name *" 
-                  value={formData.companyName}
-                  onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-                />
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-textPrimary">Company Name *</label>
+                  <input
+                    required
+                    type="text"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({...formData, companyName: e.target.value})}
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  />
+                </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-bold text-textPrimary">Address *</label>
                   <textarea 
+                    required
                     className="w-full h-32 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
                     value={formData.address}
                     onChange={(e) => setFormData({...formData, address: e.target.value})}
@@ -92,9 +158,8 @@ const Settings = () => {
                     <GraduationCap size={40} />
                   </div>
                   <div className="text-center">
-                    <p className="text-xs font-black text-primary uppercase tracking-widest mb-1">Click to upload</p>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">PNG, JPG or SVG</p>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Max size 2MB</p>
+                    <p className="text-xs font-black text-primary uppercase tracking-widest mb-1">Default Logo</p>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">System Managed</p>
                   </div>
                 </div>
               </div>
@@ -106,6 +171,7 @@ const Settings = () => {
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><Phone size={16} /></span>
                   <input 
+                    required
                     type="text"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -119,6 +185,7 @@ const Settings = () => {
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-gray-400 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">UPI</span>
                   <input 
+                    required
                     type="text"
                     value={formData.upiId}
                     onChange={(e) => setFormData({...formData, upiId: e.target.value})}
@@ -130,17 +197,23 @@ const Settings = () => {
             </div>
 
             <div className="w-1/2 space-y-2">
-              <Input 
-                label="Default Prefix *" 
-                value={formData.prefix}
-                onChange={(e) => setFormData({...formData, prefix: e.target.value})}
-              />
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-textPrimary">Default Prefix *</label>
+                <input
+                  required
+                  type="text"
+                  value={formData.receiptPrefix}
+                  onChange={(e) => setFormData({...formData, receiptPrefix: e.target.value})}
+                  className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                />
+              </div>
               <p className="text-[10px] text-gray-400 font-bold tracking-tight">This prefix will be used for all receipt numbers.</p>
             </div>
 
             <div className="pt-10">
-              <Button size="lg" className="px-12 py-7 rounded-2xl text-base font-black shadow-xl shadow-primary/20 gap-3">
-                <Save size={20} /> Save Changes
+              <Button type="submit" disabled={saving} size="lg" className="px-12 py-7 rounded-2xl text-base font-black shadow-xl shadow-primary/20 gap-3">
+                {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
+                {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </form>
@@ -160,11 +233,10 @@ const Settings = () => {
                   <div className="bg-primary p-1.5 rounded-lg">
                     <ShieldCheck className="text-white" size={16} />
                   </div>
-                  <h5 className="text-[9px] font-black text-[#1E1B4B] w-28 leading-none uppercase">{formData.companyName}</h5>
+                  <h5 className="text-[9px] font-black text-[#1E1B4B] w-28 leading-none uppercase">{formData.companyName || 'Kode to Career'}</h5>
                 </div>
-                <div className="text-[7px] text-right text-gray-400 font-bold leading-tight">
-                  <p>123, Knowledge Park, Bhopal</p>
-                  <p>GSTIN: 23ABCDE1234F1Z5</p>
+                <div className="text-[7px] text-right text-gray-400 font-bold leading-tight max-w-[120px] truncate">
+                  <p>{formData.address || 'Bhopal'}</p>
                 </div>
               </div>
 
@@ -179,8 +251,8 @@ const Settings = () => {
                   <p className="text-[8px] font-bold text-textPrimary">RAHUL SHARMA</p>
                 </div>
                 <div className="bg-gray-50/50 p-3 rounded-xl border border-gray-100 space-y-1">
-                  <p className="text-[6px] font-black text-gray-400 uppercase">Payment Mode</p>
-                  <p className="text-[8px] font-bold text-textPrimary uppercase">{formData.prefix}UPI</p>
+                  <p className="text-[6px] font-black text-gray-400 uppercase">Receipt No</p>
+                  <p className="text-[8px] font-bold text-textPrimary uppercase">{formData.receiptPrefix}-2026-0001</p>
                 </div>
               </div>
 

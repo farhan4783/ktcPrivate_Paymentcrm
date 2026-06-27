@@ -11,11 +11,18 @@ const {
   updateEnrollment,
   deleteEnrollment,
   updatePayment,
-  deletePayment
+  deletePayment,
+  bulkDeleteStudents,
+  bulkAddTags
 } = require('../controllers/studentController');
 
 // Read routes — all authenticated users (including viewer)
 router.get('/', protect, getStudents);
+
+// Bulk write routes (Staff/Admin only) - MUST go before /:id to prevent matching "bulk-delete" as an id
+router.post('/bulk-delete', protect, staffAccess, bulkDeleteStudents);
+router.post('/bulk-tag', protect, staffAccess, bulkAddTags);
+
 router.get('/:id', protect, getStudentById);
 
 // Write routes — staff and admin only (viewer cannot modify)

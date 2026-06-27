@@ -123,77 +123,121 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Revenue Overview Chart */}
-      <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-soft">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <div>
-            <h4 className="text-xl font-black text-textPrimary tracking-tight">Revenue Overview</h4>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="bg-gray-50 p-1 rounded-2xl flex border border-gray-100">
-              <button
-                onClick={() => setChartView('weekly')}
-                className={cn(
-                  "px-6 py-2 text-[10px] font-black rounded-xl transition-all",
-                  chartView === 'weekly' ? "bg-white text-[#0EA5E9] shadow-sm" : "text-gray-400"
-                )}
-              >
-                Weekly
-              </button>
-              <button
-                onClick={() => setChartView('monthly')}
-                className={cn(
-                  "px-6 py-2 text-[10px] font-black rounded-xl transition-all",
-                  chartView === 'monthly' ? "bg-white text-[#0EA5E9] shadow-sm" : "text-gray-400"
-                )}
-              >
-                Monthly
-              </button>
+      {/* Chart & Distribution Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Revenue Overview Chart */}
+        <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-soft lg:col-span-2">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+              <h4 className="text-xl font-black text-textPrimary tracking-tight">Revenue Overview</h4>
             </div>
+            <div className="flex items-center gap-4">
+              <div className="bg-gray-50 p-1 rounded-2xl flex border border-gray-100">
+                <button
+                  onClick={() => setChartView('weekly')}
+                  className={cn(
+                    "px-6 py-2 text-[10px] font-black rounded-xl transition-all",
+                    chartView === 'weekly' ? "bg-white text-[#0EA5E9] shadow-sm" : "text-gray-400"
+                  )}
+                >
+                  Weekly
+                </button>
+                <button
+                  onClick={() => setChartView('monthly')}
+                  className={cn(
+                    "px-6 py-2 text-[10px] font-black rounded-xl transition-all",
+                    chartView === 'monthly' ? "bg-white text-[#0EA5E9] shadow-sm" : "text-gray-400"
+                  )}
+                >
+                  Monthly
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="h-[280px] w-full pr-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={stats?.chartData} margin={{ top: 10, right: 10, left: 0, bottom: 25 }}>
+                <defs>
+                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#0EA5E9" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="0" vertical={false} stroke="#F8FAFC" />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 700 }}
+                  dy={15}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 700 }}
+                  tickFormatter={(value) => `₹${value >= 100000 ? value / 100000 + 'L' : value / 1000 + 'K'}`}
+                  dx={-10}
+                />
+                <Tooltip
+                  contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', padding: '12px 20px' }}
+                  itemStyle={{ fontWeight: 900, color: '#0EA5E9' }}
+                  labelStyle={{ fontWeight: 700, marginBottom: '4px' }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#0EA5E9"
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorRev)"
+                  dot={{ r: 4, fill: '#0EA5E9', strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 6, fill: '#0EA5E9', strokeWidth: 2, stroke: '#fff' }}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="h-[280px] w-full pr-4">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={stats?.chartData} margin={{ top: 10, right: 10, left: 0, bottom: 25 }}>
-              <defs>
-                <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0EA5E9" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="#0EA5E9" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="0" vertical={false} stroke="#F8FAFC" />
-              <XAxis
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 700 }}
-                dy={15}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: '#94A3B8', fontSize: 11, fontWeight: 700 }}
-                tickFormatter={(value) => `₹${value >= 100000 ? value / 100000 + 'L' : value / 1000 + 'K'}`}
-                dx={-10}
-              />
-              <Tooltip
-                contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)', padding: '12px 20px' }}
-                itemStyle={{ fontWeight: 900, color: '#0EA5E9' }}
-                labelStyle={{ fontWeight: 700, marginBottom: '4px' }}
-              />
-              <Area
-                type="monotone"
-                dataKey="revenue"
-                stroke="#0EA5E9"
-                strokeWidth={3}
-                fillOpacity={1}
-                fill="url(#colorRev)"
-                dot={{ r: 4, fill: '#0EA5E9', strokeWidth: 2, stroke: '#fff' }}
-                activeDot={{ r: 6, fill: '#0EA5E9', strokeWidth: 2, stroke: '#fff' }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        {/* Course Distribution Card */}
+        <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-soft flex flex-col justify-between">
+          <div>
+            <h4 className="text-xl font-black text-textPrimary tracking-tight mb-1">Course Distribution</h4>
+            <p className="text-textSecondary text-[10px] uppercase font-black tracking-widest mb-6">Revenue & Enrolled Students</p>
+            
+            <div className="space-y-4 max-h-[260px] overflow-y-auto pr-1">
+              {stats?.courseDistribution?.map((course, idx) => {
+                const colors = ['bg-[#0EA5E9]', 'bg-[#10B981]', 'bg-[#F59E0B]', 'bg-[#8B5CF6]', 'bg-[#06B6D4]', 'bg-[#EC4899]'];
+                const textColors = ['text-[#0EA5E9]', 'text-[#10B981]', 'text-[#F59E0B]', 'text-[#8B5CF6]', 'text-[#06B6D4]', 'text-[#EC4899]'];
+                const totalRevenueAll = stats.courseDistribution.reduce((sum, item) => sum + item.revenue, 0) || 1;
+                const percentage = Math.round((course.revenue / totalRevenueAll) * 100);
+                
+                return (
+                  <div key={course._id} className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", colors[idx % colors.length])}></span>
+                        <span className="font-bold text-textPrimary truncate max-w-[120px]">{course._id}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-black text-textPrimary">₹{course.revenue.toLocaleString()}</span>
+                        <span className="text-[10px] text-gray-400 font-bold ml-1.5">({course.studentsCount} {course.studentsCount === 1 ? 'student' : 'students'})</span>
+                      </div>
+                    </div>
+                    <div className="w-full bg-gray-50 h-2 rounded-full overflow-hidden border border-gray-100/50">
+                      <div 
+                        className={cn("h-full rounded-full transition-all duration-500", colors[idx % colors.length])}
+                        style={{ width: `${percentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
+              {(!stats?.courseDistribution || stats.courseDistribution.length === 0) && (
+                <p className="text-xs text-textSecondary font-bold italic text-center py-10">No course distribution data available.</p>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

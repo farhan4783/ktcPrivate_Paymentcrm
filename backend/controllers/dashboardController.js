@@ -96,6 +96,18 @@ exports.getDashboardStats = async (req, res) => {
       }
     }
 
+    // 7. Course Distribution (Revenue & Student count per course)
+    const courseDistribution = await Enrollment.aggregate([
+      {
+        $group: {
+          _id: '$courseName',
+          revenue: { $sum: '$paidAmount' },
+          studentsCount: { $sum: 1 }
+        }
+      },
+      { $sort: { revenue: -1 } }
+    ]);
+
     res.json({
       totalRevenue,
       totalStudents,
@@ -110,7 +122,8 @@ exports.getDashboardStats = async (req, res) => {
         paymentMode: t.paymentMode,
         createdAt: t.createdAt
       })),
-      chartData
+      chartData,
+      courseDistribution
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

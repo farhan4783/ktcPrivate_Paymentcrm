@@ -1,12 +1,14 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { 
   Download, 
-  Printer 
+  Printer,
+  Loader2 
 } from 'lucide-react';
 import { Button } from './Button';
 import { cn } from '../../utils/cn';
+import { settingsAPI } from '../../services/api';
 
 const ReceiptPreview = ({ data = {
   receiptNo: "KTC-2026-001-4660",
@@ -21,6 +23,22 @@ const ReceiptPreview = ({ data = {
   status: "PARTIAL"
 } }) => {
   const receiptRef = useRef();
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await settingsAPI.getSettings();
+        setSettings(res.data);
+      } catch (err) {
+        console.error('Failed to load settings in receipt preview', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleDownload = async () => {
     const element = receiptRef.current;
@@ -32,6 +50,14 @@ const ReceiptPreview = ({ data = {
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
     pdf.save(`Receipt-${data.receiptNo}.pdf`);
   };
+
+  if (loading) {
+    return (
+      <div className="py-12 flex justify-center items-center">
+        <Loader2 className="animate-spin text-[#0EA5E9]" size={24} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -50,16 +76,21 @@ const ReceiptPreview = ({ data = {
         <div 
           ref={receiptRef}
           className="bg-white p-12 rounded-[24px] shadow-sm max-w-[850px] mx-auto text-sm font-inter text-gray-800"
-          style={{ width: '100%', minHeight: '1050px' }}
+          style={{ width: '100%', minHeight: '950px' }}
         >
           {/* Header Section */}
           <div className="flex justify-between items-start mb-6">
-            <div>
-              <img src="/logo.jpeg" alt="Logo" className="h-12 w-auto object-contain" />
+            <div className="flex items-center gap-3">
+              <div className="bg-[#0EA5E9]/10 p-2.5 rounded-xl text-[#0EA5E9]">
+                <BookOpen size={24} />
+              </div>
+              <div>
+                <h5 className="text-sm font-black text-textPrimary leading-none uppercase tracking-tight">{settings?.companyName || 'Kode to Career'}</h5>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-1">{settings?.phone || ''}</p>
+              </div>
             </div>
-            <div className="text-right text-xs font-medium text-gray-500 space-y-0.5">
-              <p className="font-bold text-gray-900 text-sm">info@kodetocareer.in</p>
-              <p>Delhi</p>
+            <div className="text-right text-xs font-medium text-gray-500 space-y-0.5 max-w-[300px]">
+              <p className="font-bold text-gray-900 text-[11px] leading-tight break-words">{settings?.address || 'Bhopal, Madhya Pradesh'}</p>
             </div>
           </div>
 
@@ -133,17 +164,17 @@ const ReceiptPreview = ({ data = {
             <h5 className="font-bold text-xs text-[#0B1530] uppercase tracking-wider">Terms & Conditions</h5>
             <ol className="list-decimal list-inside text-xs text-gray-500 space-y-1.5 leading-relaxed">
               <li>Fees once paid are non-refundable.</li>
-              <li>For any queries, contact us at info@kodetocareer.com</li>
+              <li>For any queries, please reach out using the contact information listed above.</li>
             </ol>
           </div>
 
           {/* Footer Announcement Box */}
           <div className="bg-[#F0F5FF] border border-[#D0E0FC] p-6 rounded-2xl flex items-center gap-6 mt-12">
-            <div className="shrink-0 bg-white p-2 rounded-xl shadow-sm border border-[#E0E7FF]">
-              <img src="/logo.jpeg" alt="Logo" className="h-8 w-auto object-contain" />
+            <div className="shrink-0 bg-white p-2.5 rounded-xl shadow-sm border border-[#E0E7FF] text-[#0EA5E9]">
+              <BookOpen size={24} />
             </div>
             <div className="text-left text-xs text-[#1E293B] space-y-1">
-              <p className="font-semibold text-gray-800">Thank you for choosing Kodetocareer.</p>
+              <p className="font-semibold text-gray-800">Thank you for choosing {settings?.companyName || 'Kode to Career'}.</p>
               <p className="font-medium text-gray-500">We appreciate your trust in us.</p>
               <p className="font-bold text-[#1E3A8A] text-sm mt-0.5">Keep Learning, Keep Growing!</p>
             </div>

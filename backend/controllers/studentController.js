@@ -2,16 +2,20 @@ const Student = require('../models/Student');
 const Enrollment = require('../models/Enrollment');
 const Payment = require('../models/Payment');
 const Receipt = require('../models/Receipt');
+const { logActivity } = require('./activityController');
 
 exports.createStudent = async (req, res) => {
   try {
-    const { name, phone, email, course, totalFees } = req.body;
+    const { name, phone, email, course, totalFees, tags, address, source } = req.body;
     
     // 1. Find or create student
     let student = await Student.findOne({ $or: [{ phone }, { email }] });
+    let isNewStudent = false;
     if (!student) {
-      student = new Student({ name, phone, email });
+      student = new Student({ name, phone, email, tags, address, source });
       await student.save();
+      isNewStudent = true;
+      await logActivity(student._id, 'note', `Student record created`, req.user?._id || student._id);
     }
 
     // 2. Create enrollment for the course
@@ -22,6 +26,7 @@ exports.createStudent = async (req, res) => {
       balance: totalFees
     });
     await enrollment.save();
+    await logActivity(student._id, 'enrollment', `Enrolled in ${course} (Fees: ₹${totalFees})`, req.user?._id || student._id);
 
     res.status(201).json({ student, enrollment });
   } catch (error) {
@@ -86,6 +91,7 @@ exports.addEnrollment = async (req, res) => {
       balance: totalFees
     });
     await enrollment.save();
+    await logActivity(studentId, 'enrollment', `Enrolled in ${courseName} (Fees: ₹${totalFees})`, req.user?._id || studentId);
 
     res.status(201).json(enrollment);
   } catch (error) {
@@ -95,10 +101,10 @@ exports.addEnrollment = async (req, res) => {
 
 // ========== EDIT / DELETE OPERATIONS ==========
 
-// Update student details (name, phone, email)
+// Update student details (name, phone, email, tags, address, source)
 exports.updateStudent = async (req, res) => {
   try {
-    const { name, phone, email } = req.body;
+    const { name, phone, email, tags, address, source } = req.body;
     const student = await Student.findById(req.params.id);
     
     if (!student) return res.status(404).json({ message: 'Student not found' });
@@ -116,21 +122,27 @@ exports.updateStudent = async (req, res) => {
     if (name) student.name = name;
     if (phone) student.phone = phone;
     if (email) student.email = email;
+    if (tags !== undefined) student.tags = tags;
+    if (address !== undefined) student.address = address;
+    if (source !== undefined) student.source = source;
 
     await student.save();
+    await logActivity(student._id, 'note', `Student details updated`, req.user?._id || student._id);
+
     res.json({ message: 'Student updated successfully', student });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// Delete a student and all their enrollments, payments, receipts
+// Delete a student and all their enrollments, payments, receipts, activities
 exports.deleteStudent = async (req, res) => {
   try {
     const student = await Student.findById(req.params.id);
     if (!student) return res.status(404).json({ message: 'Student not found' });
 
     // Cascade delete all related data
+    await require('../models/Activity').deleteMany({ studentId: req.params.id });
     await Receipt.deleteMany({ studentId: req.params.id });
     await Payment.deleteMany({ studentId: req.params.id });
     await Enrollment.deleteMany({ studentId: req.params.id });
@@ -167,6 +179,8 @@ exports.updateEnrollment = async (req, res) => {
     }
 
     await enrollment.save();
+    await logActivity(enrollment.studentId, 'enrollment', `Enrollment updated for ${enrollment.courseName} (Fees: ₹${enrollment.totalFees})`, req.user?._id || enrollment.studentId);
+
     res.json({ message: 'Enrollment updated successfully', enrollment });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -183,6 +197,7 @@ exports.deleteEnrollment = async (req, res) => {
     await Receipt.deleteMany({ enrollmentId: req.params.enrollmentId });
     await Payment.deleteMany({ enrollmentId: req.params.enrollmentId });
     await Enrollment.findByIdAndDelete(req.params.enrollmentId);
+    await logActivity(enrollment.studentId, 'enrollment', `Enrollment deleted for ${enrollment.courseName}`, req.user?._id || enrollment.studentId);
 
     res.json({ message: 'Enrollment and related records deleted successfully' });
   } catch (error) {
@@ -205,6 +220,7 @@ exports.updatePayment = async (req, res) => {
     if (transactionId !== undefined) payment.transactionId = transactionId;
 
     await payment.save();
+    await logActivity(payment.studentId, 'payment', `Payment updated: ₹${payment.amountPaid} via ${payment.paymentMode}`, req.user?._id || payment.studentId);
 
     // Recalculate enrollment totals if amount changed
     if (amountPaid !== undefined && Number(amountPaid) !== oldAmount) {
@@ -252,6 +268,7 @@ exports.deletePayment = async (req, res) => {
     // Delete associated receipt
     await Receipt.deleteMany({ paymentId: req.params.paymentId });
     await Payment.findByIdAndDelete(req.params.paymentId);
+    await logActivity(payment.studentId, 'payment', `Payment of ₹${payment.amountPaid} deleted`, req.user?._id || payment.studentId);
 
     // Recalculate enrollment
     const enrollment = await Enrollment.findById(payment.enrollmentId);
@@ -272,6 +289,42 @@ exports.deletePayment = async (req, res) => {
     }
 
     res.json({ message: 'Payment and receipt deleted, enrollment recalculated' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Bulk delete students
+exports.bulkDeleteStudents = async (req, res) => {
+  try {
+    const { studentIds } = req.body;
+    if (!studentIds || !Array.isArray(studentIds)) {
+      return res.status(400).json({ message: 'studentIds array is required' });
+    }
+    await require('../models/Activity').deleteMany({ studentId: { $in: studentIds } });
+    await Receipt.deleteMany({ studentId: { $in: studentIds } });
+    await Payment.deleteMany({ studentId: { $in: studentIds } });
+    await Enrollment.deleteMany({ studentId: { $in: studentIds } });
+    await Student.deleteMany({ _id: { $in: studentIds } });
+
+    res.json({ message: 'Selected students and their records deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Bulk add tags
+exports.bulkAddTags = async (req, res) => {
+  try {
+    const { studentIds, tags } = req.body;
+    if (!studentIds || !Array.isArray(studentIds) || !tags || !Array.isArray(tags)) {
+      return res.status(400).json({ message: 'studentIds and tags arrays are required' });
+    }
+    await Student.updateMany(
+      { _id: { $in: studentIds } },
+      { $addToSet: { tags: { $each: tags } } }
+    );
+    res.json({ message: 'Tags added to selected students successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

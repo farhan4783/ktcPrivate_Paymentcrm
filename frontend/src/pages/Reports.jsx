@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import API from '../services/api';
+import API, { exportAPI } from '../services/api';
+import { COURSES } from '../utils/constants';
 import { 
   FileText, 
   DownloadCloud, 
@@ -14,6 +15,7 @@ import {
 import { Button } from '../components/ui/Button';
 import { cn } from '../utils/cn';
 import { format } from 'date-fns';
+import { toast } from 'react-hot-toast';
 import ReceiptPreview from '../components/ui/ReceiptPreview';
 
 const Reports = () => {
@@ -21,6 +23,12 @@ const Reports = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedReceipt, setSelectedReceipt] = useState(null);
+
+  // Filters
+  const [filterCourse, setFilterCourse] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('All');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     fetchReceipts();
@@ -37,10 +45,48 @@ const Reports = () => {
     }
   };
 
-  const filteredReceipts = receipts.filter(r => 
-    r.receiptNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    r.studentId?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleExportCSV = async () => {
+    try {
+      const res = await exportAPI.exportReceipts();
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'receipts.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success('Receipts report exported successfully!');
+    } catch (err) {
+      toast.error('Failed to export receipts');
+    }
+  };
+
+  const filteredReceipts = receipts.filter(r => {
+    const matchesSearch = 
+      r.receiptNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.studentId?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.studentId?.phone?.includes(searchTerm);
+
+    const matchesCourse = filterCourse === 'All' || r.enrollmentId?.courseName === filterCourse;
+    const matchesStatus = filterStatus === 'All' || r.status === filterStatus;
+
+    // Date filtering
+    let matchesDate = true;
+    if (startDate) {
+      const receiptDate = new Date(r.createdAt);
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      matchesDate = matchesDate && receiptDate >= start;
+    }
+    if (endDate) {
+      const receiptDate = new Date(r.createdAt);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      matchesDate = matchesDate && receiptDate <= end;
+    }
+
+    return matchesSearch && matchesCourse && matchesStatus && matchesDate;
+  });
 
   const handlePreview = (receipt) => {
     setSelectedReceipt({
@@ -84,12 +130,38 @@ const Reports = () => {
           <h2 className="text-2xl font-black text-textPrimary tracking-tight">Receipt History</h2>
           <p className="text-textSecondary text-[11px] mt-0.5">Audit and download all payment receipts.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="gap-2 rounded-xl border-gray-200 shadow-sm text-xs py-1.5">
-            <Calendar size={14} /> Date
-          </Button>
-          <Button variant="outline" size="sm" className="gap-2 rounded-xl border-gray-200 shadow-sm text-xs py-1.5">
-            <DownloadCloud size={14} /> Export
+        <div className="flex flex-wrap gap-2 items-center">
+          <div className="flex items-center gap-1.5 bg-white border border-gray-100 rounded-xl px-3 py-1 shadow-sm">
+            <Calendar size={14} className="text-gray-400" />
+            <input 
+              type="date" 
+              value={startDate} 
+              onChange={(e) => setStartDate(e.target.value)} 
+              className="text-[11px] font-semibold outline-none bg-transparent cursor-pointer text-textPrimary" 
+            />
+            <span className="text-[11px] text-gray-400">to</span>
+            <input 
+              type="date" 
+              value={endDate} 
+              onChange={(e) => setEndDate(e.target.value)} 
+              className="text-[11px] font-semibold outline-none bg-transparent cursor-pointer text-textPrimary" 
+            />
+            {(startDate || endDate) && (
+              <button 
+                onClick={() => { setStartDate(''); setEndDate(''); }}
+                className="text-[9px] text-red-500 font-black uppercase tracking-wider hover:underline ml-1"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleExportCSV}
+            className="gap-2 rounded-xl border-gray-200 shadow-sm text-xs py-1.5 bg-white text-textPrimary"
+          >
+            <DownloadCloud size={14} /> Export CSV
           </Button>
         </div>
       </header>
@@ -100,15 +172,32 @@ const Reports = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input 
             type="text" 
-            placeholder="Search receipts..."
-            className="w-full bg-white border border-gray-100 shadow-soft rounded-xl py-2 pl-11 pr-4 text-xs font-medium focus:ring-2 focus:ring-[#0EA5E9]/10 transition-all outline-none"
+            placeholder="Search receipts by receipt number, name or phone..."
+            className="w-full bg-white border border-gray-100 shadow-soft rounded-xl py-2.5 pl-11 pr-4 text-xs font-medium focus:ring-2 focus:ring-[#0EA5E9]/10 transition-all outline-none"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button variant="outline" className="gap-2 rounded-xl px-4 border-gray-100 bg-white shadow-soft text-xs py-2">
-          <Filter size={14} /> Filters
-        </Button>
+        <div className="flex gap-2">
+          <select
+            value={filterCourse}
+            onChange={(e) => setFilterCourse(e.target.value)}
+            className="bg-white border border-gray-100 shadow-soft rounded-xl px-4 py-2 text-xs font-bold outline-none cursor-pointer text-textPrimary"
+          >
+            <option value="All">All Courses</option>
+            {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="bg-white border border-gray-100 shadow-soft rounded-xl px-4 py-2 text-xs font-bold outline-none cursor-pointer text-textPrimary"
+          >
+            <option value="All">All Statuses</option>
+            <option value="FULLY_PAID">Fully Paid</option>
+            <option value="PARTIAL">Partial</option>
+            <option value="DUE">Due</option>
+          </select>
+        </div>
       </div>
 
       {/* Receipts Table */}

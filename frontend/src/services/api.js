@@ -24,6 +24,8 @@ export const studentAPI = {
   createStudent: (data) => API.post('/students', data),
   updateStudent: (id, data) => API.put(`/students/${id}`, data),
   deleteStudent: (id) => API.delete(`/students/${id}`),
+  bulkDeleteStudents: (studentIds) => API.post('/students/bulk-delete', { studentIds }),
+  bulkAddTags: (studentIds, tags) => API.post('/students/bulk-tag', { studentIds, tags }),
 };
 
 export const enrollmentAPI = {
@@ -52,6 +54,22 @@ export const adminAPI = {
   resetPassword: (id, data) => API.put(`/admin/users/${id}/reset-password`, data),
   approveUser: (id) => API.put(`/admin/approve/${id}`, {}),
   rejectUser: (id) => API.put(`/admin/reject/${id}`, {}),
+};
+
+export const activityAPI = {
+  getActivities: (studentId) => API.get(`/activities/${studentId}`),
+  addNote: (studentId, data) => API.post(`/activities/${studentId}`, data),
+};
+
+export const exportAPI = {
+  exportStudents: () => API.get('/export/students', { responseType: 'blob' }),
+  exportPayments: () => API.get('/export/payments', { responseType: 'blob' }),
+  exportReceipts: () => API.get('/export/receipts', { responseType: 'blob' }),
+};
+
+export const settingsAPI = {
+  getSettings: () => API.get('/settings'),
+  updateSettings: (data) => API.put('/settings', data),
 };
 
 export default API;

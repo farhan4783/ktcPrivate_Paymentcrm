@@ -2,6 +2,7 @@ const Payment = require('../models/Payment');
 const Enrollment = require('../models/Enrollment');
 const Student = require('../models/Student');
 const Receipt = require('../models/Receipt');
+const { logActivity } = require('./activityController');
 
 exports.createPayment = async (req, res) => {
   try {
@@ -19,6 +20,14 @@ exports.createPayment = async (req, res) => {
     });
     await payment.save();
 
+    // Log Activity
+    await logActivity(
+      enrollment.studentId._id,
+      'payment',
+      `Received payment of ₹${amountPaid} for ${enrollment.courseName} via ${paymentMode}`,
+      req.user?._id || enrollment.studentId._id
+    );
+
     // Update Enrollment
     enrollment.paidAmount += Number(amountPaid);
     enrollment.balance = enrollment.totalFees - enrollment.paidAmount;
@@ -33,7 +42,10 @@ exports.createPayment = async (req, res) => {
     await enrollment.save();
 
     // Create Receipt
-    const receiptNo = `KTC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const Settings = require('../models/Settings');
+    const settings = await Settings.findOne();
+    const prefix = settings?.receiptPrefix || 'KTC';
+    const receiptNo = `${prefix}-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
     const receipt = new Receipt({
       receiptNo,
       studentId: enrollment.studentId._id,

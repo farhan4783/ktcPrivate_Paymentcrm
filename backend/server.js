@@ -11,6 +11,9 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const receiptRoutes = require('./routes/receiptRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const activityRoutes = require('./routes/activityRoutes');
+const exportRoutes = require('./routes/exportRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 
 const app = express();
 
@@ -50,6 +53,9 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/receipts', receiptRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/activities', activityRoutes);
+app.use('/api/export', exportRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // DB Connection
 mongoose.connect(process.env.MONGODB_URI)

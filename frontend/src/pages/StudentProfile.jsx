@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import API from '../services/api';
+import API, { activityAPI } from '../services/api';
 import { COURSES } from '../utils/constants';
 import { 
   ArrowLeft, 
@@ -21,7 +21,9 @@ import {
   MessageCircle,
   Trash2,
   AlertTriangle,
-  Save
+  Save,
+  Tag,
+  MapPin
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { cn } from '../utils/cn';
@@ -40,6 +42,11 @@ const StudentProfile = () => {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  // Timeline State
+  const [activities, setActivities] = useState([]);
+  const [newNote, setNewNote] = useState('');
+  const [activitiesLoading, setActivitiesLoading] = useState(false);
+
   // Modals
   const [showAddEnrollment, setShowAddEnrollment] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
@@ -55,12 +62,13 @@ const StudentProfile = () => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [newEnrollment, setNewEnrollment] = useState({ courseName: 'Web Development', totalFees: '' });
   
-  const [editStudentData, setEditStudentData] = useState({ name: '', phone: '', email: '' });
+  const [editStudentData, setEditStudentData] = useState({ name: '', phone: '', email: '', tags: '', address: '', source: 'Walk-in' });
   const [editEnrollmentData, setEditEnrollmentData] = useState({ courseName: '', totalFees: '' });
   const [editPaymentData, setEditPaymentData] = useState({ amountPaid: '', paymentMode: '', transactionId: '' });
 
   useEffect(() => {
     fetchStudentProfile();
+    fetchActivities();
   }, [id]);
 
   const fetchStudentProfile = async () => {
@@ -72,6 +80,18 @@ const StudentProfile = () => {
       toast.error('Could not load student profile');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchActivities = async () => {
+    setActivitiesLoading(true);
+    try {
+      const res = await activityAPI.getActivities(id);
+      setActivities(res.data);
+    } catch (err) {
+      console.error('Failed to fetch activities', err);
+    } finally {
+      setActivitiesLoading(false);
     }
   };
 
@@ -102,6 +122,7 @@ const StudentProfile = () => {
       setShowAddEnrollment(false);
       setNewEnrollment({ courseName: 'Web Development', totalFees: '' });
       fetchStudentProfile();
+      fetchActivities();
     } catch (err) {
       toast.error('Failed to add new course');
     }
@@ -109,7 +130,14 @@ const StudentProfile = () => {
 
   // ========== Edit Student ==========
   const openEditStudent = () => {
-    setEditStudentData({ name: student.name, phone: student.phone, email: student.email });
+    setEditStudentData({ 
+      name: student.name, 
+      phone: student.phone, 
+      email: student.email,
+      tags: (student.tags || []).join(', '),
+      address: student.address || '',
+      source: student.source || 'Walk-in'
+    });
     setShowEditStudent(true);
   };
 
@@ -117,14 +145,36 @@ const StudentProfile = () => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await API.put(`/students/${id}`, editStudentData);
+      const tagsArray = editStudentData.tags
+        ? editStudentData.tags.split(',').map(t => t.trim()).filter(Boolean)
+        : [];
+
+      await API.put(`/students/${id}`, {
+        ...editStudentData,
+        tags: tagsArray
+      });
       toast.success('Student info updated!');
       setShowEditStudent(false);
       fetchStudentProfile();
+      fetchActivities();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  // ========== Add Activity Note ==========
+  const handleAddNote = async (e) => {
+    e.preventDefault();
+    if (!newNote.trim()) return;
+    try {
+      await activityAPI.addNote(id, { content: newNote });
+      toast.success('Note added to timeline');
+      setNewNote('');
+      fetchActivities();
+    } catch (err) {
+      toast.error('Failed to add note');
     }
   };
 
@@ -143,6 +193,7 @@ const StudentProfile = () => {
       toast.success('Enrollment updated!');
       setShowEditEnrollment(false);
       fetchStudentProfile();
+      fetchActivities();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update enrollment');
     } finally {
@@ -163,6 +214,7 @@ const StudentProfile = () => {
       toast.success('Enrollment deleted');
       setShowDeleteEnrollment(false);
       fetchStudentProfile();
+      fetchActivities();
     } catch (err) {
       toast.error('Failed to delete enrollment');
     } finally {
@@ -189,6 +241,7 @@ const StudentProfile = () => {
       toast.success('Payment updated!');
       setShowEditPayment(false);
       fetchStudentProfile();
+      fetchActivities();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update payment');
     } finally {
@@ -209,6 +262,7 @@ const StudentProfile = () => {
       toast.success('Payment deleted');
       setShowDeletePayment(false);
       fetchStudentProfile();
+      fetchActivities();
     } catch (err) {
       toast.error('Failed to delete payment');
     } finally {
@@ -257,7 +311,7 @@ const StudentProfile = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-        {/* TOP ROW: Identity & Financial Overview */}
+        {/* Identity & Financial Overview */}
         <div className="lg:col-span-4">
           <div className="bg-white p-5 rounded-[24px] border border-gray-100 shadow-soft flex flex-col items-center text-center relative overflow-hidden h-full">
             <div className="absolute top-0 left-0 w-full h-16 bg-[#0EA5E9]/5 -z-0"></div>
@@ -285,6 +339,15 @@ const StudentProfile = () => {
             <div className="z-10 space-y-0.5">
               <h3 className="text-lg font-black text-textPrimary tracking-tight">{student.name}</h3>
               <p className="text-[8px] font-black uppercase text-secondary tracking-widest bg-secondary/10 px-2 py-0.5 rounded-full inline-block">Verified</p>
+              {student.tags && student.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 justify-center mt-2">
+                  {student.tags.map(tag => (
+                    <span key={tag} className="px-2 py-0.5 text-[9px] font-black uppercase bg-gray-100 text-gray-500 rounded border border-gray-200/50">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
             
             <div className="w-full mt-4 p-3 bg-gray-50/50 rounded-2xl space-y-2 text-left border border-gray-100">
@@ -306,6 +369,28 @@ const StudentProfile = () => {
                   <p className="text-[12px] font-bold text-textPrimary break-all">{student.email}</p>
                 </div>
               </div>
+              {student.source && (
+                <div className="flex items-center gap-2.5 p-1.5 -mx-1.5 border-t border-gray-100/50 pt-2 mt-2">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 shadow-sm">
+                    <BookOpen size={14} />
+                  </div>
+                  <div>
+                    <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest leading-none">Lead Source</p>
+                    <p className="text-[12px] font-bold text-textPrimary uppercase">{student.source}</p>
+                  </div>
+                </div>
+              )}
+              {student.address && (
+                <div className="flex items-start gap-2.5 p-1.5 -mx-1.5 border-t border-gray-100/50 pt-2">
+                  <div className="w-8 h-8 rounded-lg bg-white border border-gray-100 flex items-center justify-center text-gray-400 shadow-sm shrink-0">
+                    <MapPin size={14} />
+                  </div>
+                  <div>
+                    <p className="text-[7px] font-black text-gray-400 uppercase tracking-widest leading-none">Address</p>
+                    <p className="text-[12px] font-bold text-textPrimary leading-tight mt-0.5">{student.address}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -352,9 +437,8 @@ const StudentProfile = () => {
           </div>
         </div>
 
-        {/* SECOND ROW: Course History */}
+        {/* Course History */}
         <div className="lg:col-span-12 space-y-12 mt-4">
-          {/* Enrollments Grid */}
           <div className="space-y-6">
             <div className="flex items-center gap-3 ml-2">
               <div className="w-1.5 h-6 bg-[#0EA5E9] rounded-full"></div>
@@ -363,7 +447,6 @@ const StudentProfile = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {student.enrollments?.map((e) => (
                 <div key={e._id} className="bg-white p-5 rounded-[28px] border border-gray-100 shadow-soft group hover:shadow-xl hover:translate-y-[-4px] transition-all relative overflow-hidden">
-                  {/* Edit/Delete buttons on enrollment card */}
                   {!isViewer && (
                     <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
@@ -444,7 +527,7 @@ const StudentProfile = () => {
           </div>
         </div>
 
-        {/* Full-Width Transaction Log */}
+        {/* Transaction Log */}
         <div className="lg:col-span-12">
           <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-soft overflow-hidden">
             <div className="flex items-center gap-3 mb-6">
@@ -492,8 +575,8 @@ const StudentProfile = () => {
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-1.5">
                             <div className={cn(
-                              "w-1.5 h-1.5 rounded-full",
-                              payment.paymentMode === 'UPI' ? "bg-secondary" : payment.paymentMode === 'Cash' ? "bg-warning" : "bg-[#0EA5E9]"
+                                "w-1.5 h-1.5 rounded-full",
+                                payment.paymentMode === 'UPI' ? "bg-secondary" : payment.paymentMode === 'Cash' ? "bg-warning" : "bg-[#0EA5E9]"
                             )}></div>
                             <span className="text-[9px] font-bold text-textSecondary uppercase tracking-widest">{payment.paymentMode}</span>
                           </div>
@@ -534,6 +617,92 @@ const StudentProfile = () => {
                   })}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Timeline & Notes Panel */}
+        <div className="lg:col-span-12">
+          <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-soft">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-textSecondary">
+                  <MessageCircle size={18} />
+                </div>
+                <div>
+                  <h4 className="text-lg font-black text-textPrimary tracking-tight">Timeline & Notes</h4>
+                  <p className="text-[10px] text-textSecondary font-bold">Chronological history of all student interactions</p>
+                </div>
+              </div>
+              {!isViewer && (
+                <form onSubmit={handleAddNote} className="flex gap-2 flex-1 md:max-w-md w-full">
+                  <input
+                    type="text"
+                    placeholder="Type a note (e.g. Agreed to pay next Tuesday)..."
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    className="flex-1 bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-xs font-semibold focus:ring-2 focus:ring-[#0EA5E9]/10 outline-none transition-all"
+                  />
+                  <Button type="submit" size="sm" className="rounded-xl px-4 text-xs">
+                    Add Note
+                  </Button>
+                </form>
+              )}
+            </div>
+
+            <div className="space-y-6 relative before:absolute before:left-[17px] before:top-2 before:bottom-2 before:w-[2px] before:bg-gray-100/70">
+              {activitiesLoading ? (
+                <div className="py-6 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">
+                  <Loader2 className="animate-spin inline-block mr-2" size={16} /> Loading Timeline...
+                </div>
+              ) : activities.length === 0 ? (
+                <div className="py-6 text-center text-gray-400 font-bold text-xs italic">
+                  No activity logged yet.
+                </div>
+              ) : (
+                activities.map((act) => {
+                  const getIcon = (type) => {
+                    switch (type) {
+                      case 'payment':
+                        return <CreditCard size={12} className="text-secondary" />;
+                      case 'enrollment':
+                        return <BookOpen size={12} className="text-[#0EA5E9]" />;
+                      default:
+                        return <MessageCircle size={12} className="text-amber-500" />;
+                    }
+                  };
+                  
+                  const getIconBg = (type) => {
+                    switch (type) {
+                      case 'payment':
+                        return 'bg-secondary/10';
+                      case 'enrollment':
+                        return 'bg-[#0EA5E9]/10';
+                      default:
+                        return 'bg-amber-500/10';
+                    }
+                  };
+
+                  return (
+                    <div key={act._id} className="flex gap-4 relative animate-in fade-in duration-500">
+                      <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center shrink-0 z-10 border border-white bg-white shadow-sm", getIconBg(act.type))}>
+                        {getIcon(act.type)}
+                      </div>
+                      <div className="flex-1 bg-gray-50/50 border border-gray-100/50 p-4 rounded-2xl">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 mb-1">
+                          <span className="text-[10px] font-black uppercase text-[#0EA5E9] tracking-wider bg-[#0EA5E9]/5 px-2 py-0.5 rounded w-fit">
+                            {act.type} • {act.createdBy?.name || 'System'}
+                          </span>
+                          <span className="text-[10px] font-bold text-textSecondary">
+                            {format(new Date(act.createdAt), 'dd MMM yyyy, hh:mm a')}
+                          </span>
+                        </div>
+                        <p className="text-xs text-textPrimary font-semibold leading-relaxed whitespace-pre-wrap">{act.content}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>
@@ -610,7 +779,7 @@ const StudentProfile = () => {
       {/* MODAL: Edit Student Info */}
       {showEditStudent && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-[32px] w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in-95 duration-300 border border-gray-100">
+          <div className="bg-white rounded-[32px] w-full max-w-lg p-6 shadow-2xl relative animate-in zoom-in-95 duration-300 border border-gray-100 max-h-[90vh] overflow-y-auto">
             <button onClick={() => setShowEditStudent(false)} className="absolute top-5 right-5 p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400"><X size={18} /></button>
             <div className="flex flex-col items-center text-center mb-5">
               <div className="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mb-3"><Edit3 size={24} /></div>
@@ -630,7 +799,42 @@ const StudentProfile = () => {
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Email</label>
                   <input required type="email" value={editStudentData.email} onChange={(e) => setEditStudentData({...editStudentData, email: e.target.value})} className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none" />
                 </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Lead Source</label>
+                  <select
+                    value={editStudentData.source}
+                    onChange={(e) => setEditStudentData({...editStudentData, source: e.target.value})}
+                    className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none appearance-none cursor-pointer"
+                  >
+                    <option value="Walk-in">Walk-in</option>
+                    <option value="Online">Online</option>
+                    <option value="Referral">Referral</option>
+                    <option value="Social Media">Social Media</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Tags (comma separated)</label>
+                  <input
+                    value={editStudentData.tags}
+                    onChange={(e) => setEditStudentData({...editStudentData, tags: e.target.value})}
+                    placeholder="e.g. VIP, Follow-up"
+                    className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none"
+                  />
+                </div>
               </div>
+              
+              <div className="space-y-1">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Address</label>
+                <textarea
+                  value={editStudentData.address}
+                  onChange={(e) => setEditStudentData({...editStudentData, address: e.target.value})}
+                  placeholder="Student physical address"
+                  rows={2}
+                  className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-[13px] font-bold focus:ring-4 focus:ring-[#0EA5E9]/10 outline-none"
+                />
+              </div>
+
               <Button type="submit" disabled={submitting} className="w-full py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest gap-2 shadow-xl shadow-amber-500/20 mt-2 bg-amber-500 hover:bg-amber-600">
                 {submitting ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
                 {submitting ? 'Saving...' : 'Save Changes'}
