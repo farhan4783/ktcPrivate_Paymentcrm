@@ -216,7 +216,7 @@ const StudentProfile = () => {
       fetchStudentProfile();
       fetchActivities();
     } catch (err) {
-      toast.error('Failed to delete enrollment');
+      toast.error(err.response?.data?.message || 'Failed to delete enrollment');
     } finally {
       setSubmitting(false);
     }
@@ -264,7 +264,7 @@ const StudentProfile = () => {
       fetchStudentProfile();
       fetchActivities();
     } catch (err) {
-      toast.error('Failed to delete payment');
+      toast.error(err.response?.data?.message || 'Failed to delete payment');
     } finally {
       setSubmitting(false);
     }
