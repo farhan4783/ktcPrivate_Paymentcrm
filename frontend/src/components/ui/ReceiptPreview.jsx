@@ -4,7 +4,8 @@ import html2canvas from 'html2canvas';
 import { 
   Download, 
   Printer,
-  Loader2 
+  Loader2,
+  BookOpen
 } from 'lucide-react';
 import { Button } from './Button';
 import { cn } from '../../utils/cn';
