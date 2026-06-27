@@ -489,30 +489,31 @@ const CertificateGenerator = () => {
                 }}></div>
 
                 {/* Content Area */}
-                <div className="w-full h-full flex flex-col justify-between items-center z-10 relative">
+                <div className="w-full h-full flex flex-col justify-between items-center z-10 relative py-3">
                   
-                  {/* Top Block: Logo and Headers */}
-                  <div className="flex flex-col items-center mt-2">
-                    {/* Header Logo: We use logo.jpeg because it has a clean white background */}
-                    <img src="/logo.jpeg" alt="KodeToCareer Logo" className="h-10 object-contain mb-5" />
+                  {/* Top Block: Logo and Headers grouped to avoid spacing drift */}
+                  <div className="flex flex-col items-center">
+                    {/* Header Logo: Enlarged from h-10 to h-16 as requested */}
+                    <img src="/logo.jpeg" alt="KodeToCareer Logo" className="h-16 object-contain mb-3" />
 
                     <h1 
-                      className="text-[#0EA5E9] leading-none"
+                      className="text-[#0EA5E9]"
                       style={{
                         fontFamily: "'Alex Brush', cursive",
-                        fontSize: '84px'
+                        fontSize: '92px',
+                        lineHeight: '1.2'
                       }}
                     >
                       Certificate
                     </h1>
-                    <p className="text-[12px] font-black text-gray-800 tracking-[0.25em] mt-1.5 uppercase">
+                    <p className="text-[12px] font-black text-gray-800 tracking-[0.25em] mt-2 uppercase">
                       OF ACHIEVEMENT
                     </p>
-                  </div>
-
-                  {/* Presenter Line */}
-                  <div className="text-[9.5px] font-black text-gray-400 tracking-[0.2em] mt-2 uppercase">
-                    THIS CERTIFICATE IS PROUDLY PRESENTED TO
+                    
+                    {/* Presenter Line - grouped inside top block to stay near title */}
+                    <div className="text-[9.5px] font-black text-gray-400 tracking-[0.2em] mt-5 uppercase">
+                      THIS CERTIFICATE IS PROUDLY PRESENTED TO
+                    </div>
                   </div>
 
                   {/* Recipient Block */}
@@ -529,7 +530,7 @@ const CertificateGenerator = () => {
                     </h2>
                     
                     {/* Clean Gradient Accent Line under name */}
-                    <div className="flex flex-col items-center gap-[2.5px] w-[50%] mt-4 mb-2">
+                    <div className="flex flex-col items-center gap-[2.5px] w-[50%] mt-4">
                       <div className="w-full h-[1.5px] bg-[#0EA5E9]/30"></div>
                       <div className="w-[75%] h-[0.5px] bg-[#0EA5E9]/15"></div>
                     </div>
@@ -540,13 +541,13 @@ const CertificateGenerator = () => {
                     <p className="text-gray-700 leading-[1.7] text-sm font-medium">
                       for successfully completing the course of study in <span className="font-extrabold text-gray-900 text-base tracking-wide border-b border-[#0EA5E9]/30 pb-0.5">{formData.courseName}</span> at Kode To Career.
                     </p>
-                    <p className="text-textSecondary leading-[1.7] text-[11.5px] font-normal mt-3 max-w-[700px]">
+                    <p className="text-textSecondary leading-[1.7] text-[11.5px] font-normal mt-2.5 max-w-[700px]">
                       {formData.description}
                     </p>
                   </div>
 
                   {/* Signatures & Issue Date Footer */}
-                  <div className="w-full flex justify-between items-end px-8 mt-4">
+                  <div className="w-full flex justify-between items-end px-8">
                     {/* Left: Mohd Kaunain */}
                     <div className="w-[200px] flex flex-col items-center">
                       {/* Cursive Signature */}
