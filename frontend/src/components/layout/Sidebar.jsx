@@ -8,7 +8,9 @@ import {
   LogOut,
   FileBarChart,
   ShieldCheck,
-  X
+  X,
+  Award,
+  Briefcase
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../context/AuthContext';
@@ -22,6 +24,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     { name: 'Students', icon: Users, path: '/students' },
     { name: 'Payments', icon: CreditCard, path: '/payments' },
     { name: 'Receipts', icon: FileText, path: '/receipts' },
+    { name: 'Certificates', icon: Award, path: '/certificates' },
+    { name: 'Internship Letters', icon: Briefcase, path: '/internship-letters' },
     { name: 'Reports', icon: FileBarChart, path: '/reports' },
   ];
 

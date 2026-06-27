@@ -13,6 +13,8 @@ import Reports from '../pages/Reports';
 import ProtectedRoute from './ProtectedRoute';
 
 import ReceiptGenerator from '../pages/ReceiptGenerator';
+import CertificateGenerator from '../pages/CertificateGenerator';
+import InternshipLetterGenerator from '../pages/InternshipLetterGenerator';
 
 const AppRoutes = () => {
   return (
@@ -29,6 +31,8 @@ const AppRoutes = () => {
           <Route path="/students/:id" element={<StudentProfile />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/receipts" element={<ReceiptGenerator />} />
+          <Route path="/certificates" element={<CertificateGenerator />} />
+          <Route path="/internship-letters" element={<InternshipLetterGenerator />} />
           <Route path="/reports" element={<Reports />} />
           
           {/* Admin Only Routes */}
