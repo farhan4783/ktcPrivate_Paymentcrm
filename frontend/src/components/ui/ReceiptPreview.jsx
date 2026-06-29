@@ -91,7 +91,7 @@ const ReceiptPreview = ({ data = {
               </div>
             </div>
             <div className="text-right text-xs font-medium text-gray-500 space-y-0.5 max-w-[300px]">
-              <p className="font-bold text-gray-900 text-[11px] leading-tight break-words">{settings?.address || 'Bhopal, Madhya Pradesh'}</p>
+              <p className="font-bold text-gray-900 text-[11px] leading-tight break-words">{settings?.address || 'info.kodetocareer.com'}</p>
             </div>
           </div>
 

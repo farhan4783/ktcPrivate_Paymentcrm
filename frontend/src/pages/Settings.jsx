@@ -236,7 +236,7 @@ const Settings = () => {
                   <h5 className="text-[9px] font-black text-[#1E1B4B] w-28 leading-none uppercase">{formData.companyName || 'Kode to Career'}</h5>
                 </div>
                 <div className="text-[7px] text-right text-gray-400 font-bold leading-tight max-w-[120px] truncate">
-                  <p>{formData.address || 'Bhopal'}</p>
+                  <p>{formData.address || 'info.kodetocareer.com'}</p>
                 </div>
               </div>
 
