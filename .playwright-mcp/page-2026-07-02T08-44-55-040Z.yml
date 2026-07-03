@@ -1,0 +1,505 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img [ref=e3]
+    - generic [ref=e5]:
+      - generic [ref=e6]: Anas & Sons
+      - generic [ref=e7]: Jewellers
+  - navigation [ref=e9]:
+    - generic [ref=e10]:
+      - link "Anas & Sons Jewellers . Since 1988" [ref=e11] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e12]: Anas & Sons
+        - generic [ref=e13]: Jewellers . Since 1988
+      - generic [ref=e14]:
+        - link "Collections" [ref=e15] [cursor=pointer]:
+          - /url: /#collections
+          - text: Collections
+        - link "Catalog" [ref=e16] [cursor=pointer]:
+          - /url: /catalog
+          - text: Catalog
+        - link "Atelier" [ref=e17] [cursor=pointer]:
+          - /url: /#featured
+          - text: Atelier
+        - link "Heritage" [ref=e18] [cursor=pointer]:
+          - /url: /#heritage
+          - text: Heritage
+        - link "Gallery" [ref=e19] [cursor=pointer]:
+          - /url: /#gallery
+          - text: Gallery
+        - link "Showroom" [ref=e20] [cursor=pointer]:
+          - /url: /#showroom
+          - text: Showroom
+        - link "Contact" [ref=e21] [cursor=pointer]:
+          - /url: /#contact
+          - text: Contact
+      - link "Enquire" [ref=e23] [cursor=pointer]:
+        - /url: https://wa.me/919077000064?text=Hi%2C%20I%20saw%20your%20website%20and%20I%20am%20interested%20in%20your%20jewellery%20collection.%20Can%20you%20help%20me%3F
+        - text: Enquire
+  - main [ref=e25]:
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - generic [ref=e32]: Luxury Showroom
+          - heading "The Atelier Catalog" [level=2] [ref=e33]
+          - paragraph [ref=e34]: Browse Okhla's largest collection of fine gold, diamond, and sterling silver ornaments, crafted for generations.
+        - button "Reset All Filters" [ref=e35]
+      - generic [ref=e37]:
+        - button "All Masterpieces" [ref=e38]
+        - button "Rings" [ref=e39]
+        - button "Earrings" [ref=e40]
+        - button "Pendants" [ref=e41]
+        - button "Bangles & Bracelets" [ref=e42]
+        - button "Necklaces" [ref=e43]
+      - generic [ref=e44]:
+        - complementary [ref=e45]:
+          - generic [ref=e46]:
+            - heading "Refine Pieces" [level=3] [ref=e47]
+            - generic [ref=e48]:
+              - textbox "Search catalog..." [ref=e49]
+              - img [ref=e50]
+            - generic [ref=e52]:
+              - button "Metal / Material" [ref=e53]:
+                - generic [ref=e54]: Metal / Material
+                - img [ref=e55]
+              - generic [ref=e57]:
+                - generic [ref=e58] [cursor=pointer]:
+                  - checkbox "gold" [ref=e59]
+                  - generic [ref=e60]: gold
+                - generic [ref=e61] [cursor=pointer]:
+                  - checkbox "diamond" [ref=e62]
+                  - generic [ref=e63]: diamond
+                - generic [ref=e64] [cursor=pointer]:
+                  - checkbox "silver" [ref=e65]
+                  - generic [ref=e66]: silver
+            - generic [ref=e67]:
+              - button "Price Range" [ref=e68]:
+                - generic [ref=e69]: Price Range
+                - img [ref=e70]
+              - generic [ref=e72]:
+                - generic [ref=e73] [cursor=pointer]:
+                  - checkbox "Under ₹25,000" [ref=e74]
+                  - generic [ref=e75]: Under ₹25,000
+                - generic [ref=e76] [cursor=pointer]:
+                  - checkbox "₹25,000 - ₹50,000" [ref=e77]
+                  - generic [ref=e78]: ₹25,000 - ₹50,000
+                - generic [ref=e79] [cursor=pointer]:
+                  - checkbox "₹50,000 - ₹1,00,000" [ref=e80]
+                  - generic [ref=e81]: ₹50,000 - ₹1,00,000
+                - generic [ref=e82] [cursor=pointer]:
+                  - checkbox "Over ₹1,00,000" [ref=e83]
+                  - generic [ref=e84]: Over ₹1,00,000
+            - generic [ref=e85]:
+              - button "Occasion" [ref=e86]:
+                - generic [ref=e87]: Occasion
+                - img [ref=e88]
+              - generic [ref=e90]:
+                - generic [ref=e91] [cursor=pointer]:
+                  - checkbox "Bridal" [ref=e92]
+                  - generic [ref=e93]: Bridal
+                - generic [ref=e94] [cursor=pointer]:
+                  - checkbox "Engagement" [ref=e95]
+                  - generic [ref=e96]: Engagement
+                - generic [ref=e97] [cursor=pointer]:
+                  - checkbox "Daily Wear" [ref=e98]
+                  - generic [ref=e99]: Daily Wear
+                - generic [ref=e100] [cursor=pointer]:
+                  - checkbox "Gifting" [ref=e101]
+                  - generic [ref=e102]: Gifting
+                - generic [ref=e103] [cursor=pointer]:
+                  - checkbox "Festive / Eid" [ref=e104]
+                  - generic [ref=e105]: Festive / Eid
+        - generic [ref=e106]:
+          - generic [ref=e108]:
+            - generic [ref=e109]: "Sort:"
+            - combobox [ref=e110] [cursor=pointer]:
+              - option "Popularity" [selected]
+              - 'option "Price: Low to High"'
+              - 'option "Price: High to Low"'
+              - 'option "Weight: Heavy to Light"'
+          - generic [ref=e111]: 20 pieces in view
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - generic [ref=e114] [cursor=pointer]:
+                - img "Heritage Kundan Bridal Haar" [ref=e115]
+                - generic [ref=e117]: 22K
+                - generic [ref=e118]: 74.8g
+              - generic [ref=e119]:
+                - generic [ref=e120]:
+                  - generic [ref=e121]: necklaces
+                  - heading "Heritage Kundan Bridal Haar" [level=4] [ref=e122] [cursor=pointer]
+                - generic [ref=e123]:
+                  - generic [ref=e124]:
+                    - generic [ref=e125]: Est. Price
+                    - generic [ref=e126]: ₹5,40,000 approx.
+                  - link "Enquire on WhatsApp" [ref=e127] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Heritage%20Kundan%20Bridal%20Haar*%0A%E2%80%A2%20Category%3A%20NECKLACES%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Gold%20with%20Kundan%0A%E2%80%A2%20Weight%3A%2074.8g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B95%2C40%2C000%20approx.%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e128]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e130]:
+              - generic [ref=e131] [cursor=pointer]:
+                - img "Minimalist Diamond Studs" [ref=e132]
+                - generic [ref=e134]: 18K
+                - generic [ref=e135]: 4.2g
+              - generic [ref=e136]:
+                - generic [ref=e137]:
+                  - generic [ref=e138]: earrings
+                  - heading "Minimalist Diamond Studs" [level=4] [ref=e139] [cursor=pointer]
+                - generic [ref=e140]:
+                  - generic [ref=e141]:
+                    - generic [ref=e142]: Est. Price
+                    - generic [ref=e143]: ₹95,000
+                  - link "Enquire on WhatsApp" [ref=e144] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Minimalist%20Diamond%20Studs*%0A%E2%80%A2%20Category%3A%20EARRINGS%0A%E2%80%A2%20Material%3A%20DIAMOND%0A%E2%80%A2%20Purity%3A%2018K%20Gold%20Setting%20%2F%20VVS%20EF%0A%E2%80%A2%20Weight%3A%204.2g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B995%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e145]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e147]:
+              - generic [ref=e148] [cursor=pointer]:
+                - img "Floral Diamond Cluster Ring" [ref=e149]
+                - generic [ref=e151]: 18K
+                - generic [ref=e152]: 3.8g
+              - generic [ref=e153]:
+                - generic [ref=e154]:
+                  - generic [ref=e155]: rings
+                  - heading "Floral Diamond Cluster Ring" [level=4] [ref=e156] [cursor=pointer]
+                - generic [ref=e157]:
+                  - generic [ref=e158]:
+                    - generic [ref=e159]: Est. Price
+                    - generic [ref=e160]: ₹75,000
+                  - link "Enquire on WhatsApp" [ref=e161] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Floral%20Diamond%20Cluster%20Ring*%0A%E2%80%A2%20Category%3A%20RINGS%0A%E2%80%A2%20Material%3A%20DIAMOND%0A%E2%80%A2%20Purity%3A%2018K%20Gold%20Setting%20%2F%200.72ct%0A%E2%80%A2%20Weight%3A%203.8g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B975%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e162]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e164]:
+              - generic [ref=e165] [cursor=pointer]:
+                - img "Heritage Gold Kada Set" [ref=e166]
+                - generic [ref=e168]: 22K
+                - generic [ref=e169]: 44.2g
+              - generic [ref=e170]:
+                - generic [ref=e171]:
+                  - generic [ref=e172]: bangles
+                  - heading "Heritage Gold Kada Set" [level=4] [ref=e173] [cursor=pointer]
+                - generic [ref=e174]:
+                  - generic [ref=e175]:
+                    - generic [ref=e176]: Est. Price
+                    - generic [ref=e177]: ₹3,10,000 (Pair) approx.
+                  - link "Enquire on WhatsApp" [ref=e178] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Heritage%20Gold%20Kada%20Set*%0A%E2%80%A2%20Category%3A%20BANGLES%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%2044.2g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B93%2C10%2C000%20(Pair)%20approx.%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e179]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e181]:
+              - generic [ref=e182] [cursor=pointer]:
+                - img "Emerald Luxury Gold Choker" [ref=e183]
+                - generic [ref=e185]: 22K
+                - generic [ref=e186]: 38.6g
+              - generic [ref=e187]:
+                - generic [ref=e188]:
+                  - generic [ref=e189]: necklaces
+                  - heading "Emerald Luxury Gold Choker" [level=4] [ref=e190] [cursor=pointer]
+                - generic [ref=e191]:
+                  - generic [ref=e192]:
+                    - generic [ref=e193]: Est. Price
+                    - generic [ref=e194]: ₹2,85,000
+                  - link "Enquire on WhatsApp" [ref=e195] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Emerald%20Luxury%20Gold%20Choker*%0A%E2%80%A2%20Category%3A%20NECKLACES%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%2038.6g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B92%2C85%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e196]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e198]:
+              - generic [ref=e199] [cursor=pointer]:
+                - img "Blue Sapphire Solitaire Ring" [ref=e200]
+                - generic [ref=e202]: 18K
+                - generic [ref=e203]: 4.5g
+              - generic [ref=e204]:
+                - generic [ref=e205]:
+                  - generic [ref=e206]: rings
+                  - heading "Blue Sapphire Solitaire Ring" [level=4] [ref=e207] [cursor=pointer]
+                - generic [ref=e208]:
+                  - generic [ref=e209]:
+                    - generic [ref=e210]: Est. Price
+                    - generic [ref=e211]: ₹1,35,000
+                  - link "Enquire on WhatsApp" [ref=e212] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Blue%20Sapphire%20Solitaire%20Ring*%0A%E2%80%A2%20Category%3A%20RINGS%0A%E2%80%A2%20Material%3A%20DIAMOND%0A%E2%80%A2%20Purity%3A%2018K%20White%20Gold%20%2F%201.25ct%0A%E2%80%A2%20Weight%3A%204.5g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B91%2C35%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e213]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e215]:
+              - generic [ref=e216] [cursor=pointer]:
+                - img "Exquisite Gold Gemstone Bangles" [ref=e217]
+                - generic [ref=e219]: 22K
+                - generic [ref=e220]: 32.4g
+              - generic [ref=e221]:
+                - generic [ref=e222]:
+                  - generic [ref=e223]: bangles
+                  - heading "Exquisite Gold Gemstone Bangles" [level=4] [ref=e224] [cursor=pointer]
+                - generic [ref=e225]:
+                  - generic [ref=e226]:
+                    - generic [ref=e227]: Est. Price
+                    - generic [ref=e228]: ₹2,40,000 approx.
+                  - link "Enquire on WhatsApp" [ref=e229] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Exquisite%20Gold%20Gemstone%20Bangles*%0A%E2%80%A2%20Category%3A%20BANGLES%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%2032.4g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B92%2C40%2C000%20approx.%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e230]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e232]:
+              - generic [ref=e233] [cursor=pointer]:
+                - img "Diamond Solitaire Necklace Set" [ref=e234]
+                - generic [ref=e236]: 18K
+                - generic [ref=e237]: 62.0g
+              - generic [ref=e238]:
+                - generic [ref=e239]:
+                  - generic [ref=e240]: necklaces
+                  - heading "Diamond Solitaire Necklace Set" [level=4] [ref=e241] [cursor=pointer]
+                - generic [ref=e242]:
+                  - generic [ref=e243]:
+                    - generic [ref=e244]: Est. Price
+                    - generic [ref=e245]: ₹4,80,000 approx.
+                  - link "Enquire on WhatsApp" [ref=e246] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Diamond%20Solitaire%20Necklace%20Set*%0A%E2%80%A2%20Category%3A%20NECKLACES%0A%E2%80%A2%20Material%3A%20DIAMOND%0A%E2%80%A2%20Purity%3A%2018K%20Gold%20Setting%20%2F%20VS%20GH%0A%E2%80%A2%20Weight%3A%2062.0g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B94%2C80%2C000%20approx.%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e247]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e249]:
+              - generic [ref=e250] [cursor=pointer]:
+                - img "Emerald & Diamond Silver Drops" [ref=e251]
+                - generic [ref=e253]: 18K
+                - generic [ref=e254]: 14.5g
+              - generic [ref=e255]:
+                - generic [ref=e256]:
+                  - generic [ref=e257]: earrings
+                  - heading "Emerald & Diamond Silver Drops" [level=4] [ref=e258] [cursor=pointer]
+                - generic [ref=e259]:
+                  - generic [ref=e260]:
+                    - generic [ref=e261]: Est. Price
+                    - generic [ref=e262]: ₹2,10,000
+                  - link "Enquire on WhatsApp" [ref=e263] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Emerald%20%26%20Diamond%20Silver%20Drops*%0A%E2%80%A2%20Category%3A%20EARRINGS%0A%E2%80%A2%20Material%3A%20DIAMOND%0A%E2%80%A2%20Purity%3A%2018K%20White%20Gold%20Setting%0A%E2%80%A2%20Weight%3A%2014.5g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B92%2C10%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e264]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e266]:
+              - generic [ref=e267] [cursor=pointer]:
+                - img "Gold & Gemstone Kada Pair" [ref=e268]
+                - generic [ref=e270]: 22K
+                - generic [ref=e271]: 26.8g
+              - generic [ref=e272]:
+                - generic [ref=e273]:
+                  - generic [ref=e274]: bangles
+                  - heading "Gold & Gemstone Kada Pair" [level=4] [ref=e275] [cursor=pointer]
+                - generic [ref=e276]:
+                  - generic [ref=e277]:
+                    - generic [ref=e278]: Est. Price
+                    - generic [ref=e279]: ₹1,80,000
+                  - link "Enquire on WhatsApp" [ref=e280] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Gold%20%26%20Gemstone%20Kada%20Pair*%0A%E2%80%A2%20Category%3A%20BANGLES%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%2026.8g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B91%2C80%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e281]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e283]:
+              - generic [ref=e284] [cursor=pointer]:
+                - img "Luxury Showroom Display Set" [ref=e285]
+                - generic [ref=e287]: 22K
+                - generic [ref=e288]: 85.2g
+              - generic [ref=e289]:
+                - generic [ref=e290]:
+                  - generic [ref=e291]: necklaces
+                  - heading "Luxury Showroom Display Set" [level=4] [ref=e292] [cursor=pointer]
+                - generic [ref=e293]:
+                  - generic [ref=e294]:
+                    - generic [ref=e295]: Est. Price
+                    - generic [ref=e296]: ₹4,20,000 approx.
+                  - link "Enquire on WhatsApp" [ref=e297] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Luxury%20Showroom%20Display%20Set*%0A%E2%80%A2%20Category%3A%20NECKLACES%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%20%26%20Silver%0A%E2%80%A2%20Weight%3A%2085.2g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B94%2C20%2C000%20approx.%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e298]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e300]:
+              - generic [ref=e301] [cursor=pointer]:
+                - img "Royal Pearl Chandelier Earrings" [ref=e302]
+                - generic [ref=e304]: 22K
+                - generic [ref=e305]: 22.8g
+              - generic [ref=e306]:
+                - generic [ref=e307]:
+                  - generic [ref=e308]: earrings
+                  - heading "Royal Pearl Chandelier Earrings" [level=4] [ref=e309] [cursor=pointer]
+                - generic [ref=e310]:
+                  - generic [ref=e311]:
+                    - generic [ref=e312]: Est. Price
+                    - generic [ref=e313]: ₹1,50,000
+                  - link "Enquire on WhatsApp" [ref=e314] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Royal%20Pearl%20Chandelier%20Earrings*%0A%E2%80%A2%20Category%3A%20EARRINGS%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%2022.8g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B91%2C50%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e315]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e317]:
+              - generic [ref=e318] [cursor=pointer]:
+                - img "Atelier Diamond Loop Pendant" [ref=e319]
+                - generic [ref=e321]: 18K
+                - generic [ref=e322]: 3.5g
+              - generic [ref=e323]:
+                - generic [ref=e324]:
+                  - generic [ref=e325]: pendants
+                  - heading "Atelier Diamond Loop Pendant" [level=4] [ref=e326] [cursor=pointer]
+                - generic [ref=e327]:
+                  - generic [ref=e328]:
+                    - generic [ref=e329]: Est. Price
+                    - generic [ref=e330]: ₹58,000
+                  - link "Enquire on WhatsApp" [ref=e331] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Atelier%20Diamond%20Loop%20Pendant*%0A%E2%80%A2%20Category%3A%20PENDANTS%0A%E2%80%A2%20Material%3A%20DIAMOND%0A%E2%80%A2%20Purity%3A%2018K%20Gold%20Setting%0A%E2%80%A2%20Weight%3A%203.5g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B958%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e332]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e334]:
+              - generic [ref=e335] [cursor=pointer]:
+                - img "Pearl & Gold Heritage Haar" [ref=e336]
+                - generic [ref=e338]: 22K
+                - generic [ref=e339]: 52.4g
+              - generic [ref=e340]:
+                - generic [ref=e341]:
+                  - generic [ref=e342]: necklaces
+                  - heading "Pearl & Gold Heritage Haar" [level=4] [ref=e343] [cursor=pointer]
+                - generic [ref=e344]:
+                  - generic [ref=e345]:
+                    - generic [ref=e346]: Est. Price
+                    - generic [ref=e347]: ₹3,65,000
+                  - link "Enquire on WhatsApp" [ref=e348] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Pearl%20%26%20Gold%20Heritage%20Haar*%0A%E2%80%A2%20Category%3A%20NECKLACES%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%2052.4g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B93%2C65%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e349]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e351]:
+              - generic [ref=e352] [cursor=pointer]:
+                - img "Turkish Textured Gold Chain" [ref=e353]
+                - generic [ref=e355]: 21K
+                - generic [ref=e356]: 18.5g
+              - generic [ref=e357]:
+                - generic [ref=e358]:
+                  - generic [ref=e359]: necklaces
+                  - heading "Turkish Textured Gold Chain" [level=4] [ref=e360] [cursor=pointer]
+                - generic [ref=e361]:
+                  - generic [ref=e362]:
+                    - generic [ref=e363]: Est. Price
+                    - generic [ref=e364]: ₹1,25,000
+                  - link "Enquire on WhatsApp" [ref=e365] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Turkish%20Textured%20Gold%20Chain*%0A%E2%80%A2%20Category%3A%20NECKLACES%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2021K%20Hallmarked%0A%E2%80%A2%20Weight%3A%2018.5g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B91%2C25%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e366]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e368]:
+              - generic [ref=e369] [cursor=pointer]:
+                - img "Gemstone Luxury Drop Earrings" [ref=e370]
+                - generic [ref=e372]: 22K
+                - generic [ref=e373]: 12.4g
+              - generic [ref=e374]:
+                - generic [ref=e375]:
+                  - generic [ref=e376]: earrings
+                  - heading "Gemstone Luxury Drop Earrings" [level=4] [ref=e377] [cursor=pointer]
+                - generic [ref=e378]:
+                  - generic [ref=e379]:
+                    - generic [ref=e380]: Est. Price
+                    - generic [ref=e381]: ₹85,000
+                  - link "Enquire on WhatsApp" [ref=e382] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Gemstone%20Luxury%20Drop%20Earrings*%0A%E2%80%A2%20Category%3A%20EARRINGS%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%2012.4g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B985%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e383]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e385]:
+              - generic [ref=e386] [cursor=pointer]:
+                - img "Antique Indian Gold Ring" [ref=e387]
+                - generic [ref=e389]: 22K
+                - generic [ref=e390]: 6.8g
+              - generic [ref=e391]:
+                - generic [ref=e392]:
+                  - generic [ref=e393]: rings
+                  - heading "Antique Indian Gold Ring" [level=4] [ref=e394] [cursor=pointer]
+                - generic [ref=e395]:
+                  - generic [ref=e396]:
+                    - generic [ref=e397]: Est. Price
+                    - generic [ref=e398]: ₹45,000
+                  - link "Enquire on WhatsApp" [ref=e399] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Antique%20Indian%20Gold%20Ring*%0A%E2%80%A2%20Category%3A%20RINGS%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%206.8g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B945%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e400]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e402]:
+              - generic [ref=e403] [cursor=pointer]:
+                - img "Classic Gold Wedding Bands" [ref=e404]
+                - generic [ref=e406]: 22K
+                - generic [ref=e407]: 9.2g
+              - generic [ref=e408]:
+                - generic [ref=e409]:
+                  - generic [ref=e410]: rings
+                  - heading "Classic Gold Wedding Bands" [level=4] [ref=e411] [cursor=pointer]
+                - generic [ref=e412]:
+                  - generic [ref=e413]:
+                    - generic [ref=e414]: Est. Price
+                    - generic [ref=e415]: ₹65,000 (Pair)
+                  - link "Enquire on WhatsApp" [ref=e416] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Classic%20Gold%20Wedding%20Bands*%0A%E2%80%A2%20Category%3A%20RINGS%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%209.2g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B965%2C000%20(Pair)%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e417]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e419]:
+              - generic [ref=e420] [cursor=pointer]:
+                - img "Heart Solitaire Pendant" [ref=e421]
+                - generic [ref=e423]: 18K
+                - generic [ref=e424]: 2.4g
+              - generic [ref=e425]:
+                - generic [ref=e426]:
+                  - generic [ref=e427]: pendants
+                  - heading "Heart Solitaire Pendant" [level=4] [ref=e428] [cursor=pointer]
+                - generic [ref=e429]:
+                  - generic [ref=e430]:
+                    - generic [ref=e431]: Est. Price
+                    - generic [ref=e432]: ₹32,000
+                  - link "Enquire on WhatsApp" [ref=e433] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Heart%20Solitaire%20Pendant*%0A%E2%80%A2%20Category%3A%20PENDANTS%0A%E2%80%A2%20Material%3A%20DIAMOND%0A%E2%80%A2%20Purity%3A%2018K%20White%20Gold%20%2F%200.35ct%0A%E2%80%A2%20Weight%3A%202.4g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B932%2C000%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e434]
+                    - text: Enquire on WhatsApp
+            - generic [ref=e436]:
+              - generic [ref=e437] [cursor=pointer]:
+                - img "Bridal Gold Bangles Set" [ref=e438]
+                - generic [ref=e440]: 22K
+                - generic [ref=e441]: 39.5g
+              - generic [ref=e442]:
+                - generic [ref=e443]:
+                  - generic [ref=e444]: bangles
+                  - heading "Bridal Gold Bangles Set" [level=4] [ref=e445] [cursor=pointer]
+                - generic [ref=e446]:
+                  - generic [ref=e447]:
+                    - generic [ref=e448]: Est. Price
+                    - generic [ref=e449]: ₹2,90,000 approx.
+                  - link "Enquire on WhatsApp" [ref=e450] [cursor=pointer]:
+                    - /url: https://wa.me/919077000064?text=Hi%20Anas%20%26%20Sons%20Jewellers%2C%20I%20am%20interested%20in%20viewing%20%2F%20purchasing%20this%20piece%20from%20your%20online%20catalog%3A%0A%0A%E2%9C%A8%20*Bridal%20Gold%20Bangles%20Set*%0A%E2%80%A2%20Category%3A%20BANGLES%0A%E2%80%A2%20Material%3A%20GOLD%0A%E2%80%A2%20Purity%3A%2022K%20Hallmarked%0A%E2%80%A2%20Weight%3A%2039.5g%0A%E2%80%A2%20Est.%20Price%3A%20%E2%82%B92%2C90%2C000%20approx.%0A%0APlease%20share%20more%20details%20and%20availability.
+                    - img [ref=e451]
+                    - text: Enquire on WhatsApp
+  - contentinfo [ref=e453]:
+    - generic [ref=e454]:
+      - generic [ref=e455]:
+        - generic [ref=e456]:
+          - heading "Anas & Sons" [level=3] [ref=e457]
+          - paragraph [ref=e458]: Jewellers . Since 1988
+          - paragraph [ref=e459]: The Art of Timeless Luxury. Nearly four decades of craftsmanship, trust, and timeless beauty.
+        - generic [ref=e460]:
+          - heading "Navigate" [level=4] [ref=e461]
+          - generic [ref=e462]:
+            - link "Collections" [ref=e463] [cursor=pointer]:
+              - /url: "#collections"
+            - link "Gallery" [ref=e464] [cursor=pointer]:
+              - /url: "#gallery"
+            - link "Heritage" [ref=e465] [cursor=pointer]:
+              - /url: "#heritage"
+            - link "Showroom" [ref=e466] [cursor=pointer]:
+              - /url: "#showroom"
+            - link "Contact" [ref=e467] [cursor=pointer]:
+              - /url: "#contact"
+        - generic [ref=e468]:
+          - heading "Contact" [level=4] [ref=e469]
+          - generic [ref=e470]:
+            - link "+91 90770 00064" [ref=e471] [cursor=pointer]:
+              - /url: tel:+919077000064
+            - link "Instagram" [ref=e472] [cursor=pointer]:
+              - /url: https://www.instagram.com/anasandsonsjewellers.co/
+            - link "Google Maps" [ref=e473] [cursor=pointer]:
+              - /url: https://maps.app.goo.gl/CytEJAVAhhocMwrD8?g_st=ic
+        - generic [ref=e474]:
+          - heading "Showroom" [level=4] [ref=e475]
+          - paragraph [ref=e476]:
+            - text: Shop No. 334E/1, Main Road, Batla House
+            - text: Okhla, Jamia Nagar
+            - text: New Delhi 110025
+      - generic [ref=e477]:
+        - paragraph [ref=e478]: © 2026 Anas & Sons Jewellers
+        - paragraph [ref=e479]: Crafted with care
+  - link "Chat on WhatsApp" [ref=e481] [cursor=pointer]:
+    - /url: https://wa.me/919077000064?text=Hi%2C%20I%20saw%20your%20website%20and%20I%20am%20interested%20in%20your%20jewellery%20collection.%20Can%20you%20help%20me%3F
+    - img [ref=e482]
+  - button "AI Jewellery Assistant" [ref=e484]:
+    - img [ref=e485]
+  - button "Open Next.js Dev Tools" [ref=e492] [cursor=pointer]:
+    - img [ref=e493]
