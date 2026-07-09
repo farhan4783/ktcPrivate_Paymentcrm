@@ -14,6 +14,7 @@ import {
 import { Button } from './Button';
 import { cn } from '../../utils/cn';
 import { settingsAPI } from '../../services/api';
+import { defaultLogoBase64 } from './logoBase64';
 
 const ReceiptPreview = ({ data = {
   receiptNo: "KTC-2026-001-4660",
@@ -30,6 +31,7 @@ const ReceiptPreview = ({ data = {
   const receiptRef = useRef();
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [logoBase64, setLogoBase64] = useState(defaultLogoBase64);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -45,14 +47,80 @@ const ReceiptPreview = ({ data = {
     fetchSettings();
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    const convertLogoToBase64 = (url) => {
+      if (url === '/logo.jpeg') {
+        setLogoBase64(defaultLogoBase64);
+        return;
+      }
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.src = url;
+      img.onload = () => {
+        if (!active) return;
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        try {
+          const dataURL = canvas.toDataURL('image/png');
+          setLogoBase64(dataURL);
+        } catch (err) {
+          console.error('Failed to convert logo to base64, using direct url:', err);
+          setLogoBase64(url);
+        }
+      };
+      img.onerror = () => {
+        if (!active) return;
+        console.warn('Failed to load logo image, using fallback:', url);
+        setLogoBase64(url);
+      };
+    };
+
+    if (settings?.logoUrl) {
+      convertLogoToBase64(settings.logoUrl);
+    } else {
+      setLogoBase64(defaultLogoBase64);
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [settings]);
+
   const handleDownload = async () => {
     const element = receiptRef.current;
-    const canvas = await html2canvas(element, { scale: 3, useCORS: true });
+    const canvas = await html2canvas(element, { 
+      scale: 3, 
+      useCORS: true
+    });
     const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+    // Parse and add interactive link annotations on top of the PDF canvas
+    try {
+      const linkElements = element.querySelectorAll('a');
+      const elementRect = element.getBoundingClientRect();
+      const scaleFactor = pdfWidth / elementRect.width;
+
+      linkElements.forEach((linkEl) => {
+        const rect = linkEl.getBoundingClientRect();
+        const left = (rect.left - elementRect.left) * scaleFactor;
+        const top = (rect.top - elementRect.top) * scaleFactor;
+        const w = rect.width * scaleFactor;
+        const h = rect.height * scaleFactor;
+        
+        pdf.link(left, top, w, h, { url: linkEl.href });
+      });
+    } catch (err) {
+      console.error('Failed to add links to PDF', err);
+    }
+
     pdf.save(`Receipt-${data.receiptNo}.pdf`);
   };
 
@@ -84,83 +152,21 @@ const ReceiptPreview = ({ data = {
           style={{ width: '100%', minHeight: '950px' }}
         >
           {/* Header Section */}
-          <div className="flex justify-between items-start mb-6">
-            {/* Left Side: Company Details, Website & Socials */}
-            <div className="space-y-3">
-              <div>
-                <h5 className="text-lg font-black text-textPrimary leading-none uppercase tracking-tight">
-                  {settings?.companyName || 'Kode to Career'}
-                </h5>
-                <div className="mt-2 space-y-1 text-xs text-gray-500 font-medium">
-                  {settings?.phone && (
-                    <p className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-600">
-                      <span>Phone:</span> {settings.phone}
-                    </p>
-                  )}
-                  {settings?.address && (
-                    <p className="text-[11px] text-gray-500 leading-tight max-w-[350px]">
-                      {settings.address}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Website & Social Links */}
-              <div className="flex flex-col space-y-1.5 pt-1">
-                <a 
-                  href="https://kodetocareer.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0EA5E9] hover:underline"
-                >
-                  <Globe size={14} />
-                  <span>kodetocareer.com</span>
-                </a>
-                <div className="flex items-center gap-4 text-gray-400">
-                  <a 
-                    href="https://www.youtube.com/@kodetocareer" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center gap-1 hover:text-[#FF0000] transition-colors"
-                  >
-                    <Youtube size={14} className="text-[#FF0000]" />
-                    <span className="text-[10px] font-bold">@kodetocareer</span>
-                  </a>
-                  <a 
-                    href="https://instagram.com/kodetocareer" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center gap-1 hover:text-[#E1306C] transition-colors"
-                  >
-                    <Instagram size={14} className="text-[#E1306C]" />
-                    <span className="text-[10px] font-bold">@kodetocareer</span>
-                  </a>
-                  <a 
-                    href="https://linkedin.com/company/kodetocareer" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center gap-1 hover:text-[#0A66C2] transition-colors"
-                  >
-                    <Linkedin size={14} className="text-[#0A66C2]" />
-                    <span className="text-[10px] font-bold">KodeToCareer</span>
-                  </a>
-                </div>
-              </div>
+          <div className="flex justify-between items-center mb-6">
+            {/* Left Side: Brand Logo only */}
+            <div className="flex items-center justify-start h-12 md:h-14">
+              <img 
+                src={logoBase64 || settings?.logoUrl || '/logo.jpeg'} 
+                alt="KodeToCareer Logo" 
+                className="h-full w-auto object-contain"
+                onError={(e) => {
+                  e.target.src = '/logo.jpeg';
+                }}
+              />
             </div>
 
-            {/* Right Side: Logo with Premium Dark/Black Background Box (to fit black logo.jpeg/k_logo.jpg perfectly) */}
-            <div className="flex flex-col items-end">
-              <div className="bg-[#090D1A] p-3 rounded-2xl shadow-md border border-[#1E293B]/20 flex items-center justify-center">
-                <img 
-                  src={settings?.logoUrl || '/logo.jpeg'} 
-                  alt="KodeToCareer Logo" 
-                  className="h-10 md:h-12 w-auto object-contain"
-                  onError={(e) => {
-                    e.target.src = '/logo.jpeg';
-                  }}
-                />
-              </div>
-            </div>
+            {/* Right Side: Empty */}
+            <div></div>
           </div>
 
           <div className="h-px bg-gray-200 w-full mb-6"></div>
@@ -243,10 +249,61 @@ const ReceiptPreview = ({ data = {
               <BookOpen size={24} />
             </div>
             <div className="text-left text-xs text-[#1E293B] space-y-1">
-              <p className="font-semibold text-gray-800">Thank you for choosing {settings?.companyName || 'Kode to Career'}.</p>
+              <p className="font-semibold text-gray-800">Thank you for choosing KodeToCareer.</p>
               <p className="font-medium text-gray-500">We appreciate your trust in us.</p>
               <p className="font-bold text-[#1E3A8A] text-sm mt-0.5">Keep Learning, Keep Growing!</p>
             </div>
+          </div>
+
+          {/* Footer Contact Info (Single Line) */}
+          <div className="h-px bg-gray-100 w-full mt-10 mb-6"></div>
+          <div className="flex justify-center items-center gap-8 text-[12px] text-gray-500 font-bold tracking-tight flex-wrap">
+            {settings?.phone && (
+              <span className="flex items-center gap-2">
+                <span className="text-gray-400">Phone:</span> {settings.phone}
+              </span>
+            )}
+            {settings?.address && (
+              <span className="flex items-center gap-2">
+                <span className="text-gray-400">Address:</span> {settings.address}
+              </span>
+            )}
+            <a 
+              href="https://kodetocareer.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center gap-2 hover:text-[#0EA5E9] transition-colors"
+            >
+              <Globe size={14} className="text-[#0EA5E9]" />
+              <span>kodetocareer.com</span>
+            </a>
+            <a 
+              href="https://www.youtube.com/@kodetocareer" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center gap-2 hover:text-[#FF0000] transition-colors"
+            >
+              <Youtube size={14} className="text-[#FF0000]" />
+              <span>@kodetocareer</span>
+            </a>
+            <a 
+              href="https://instagram.com/kodetocareer" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center gap-2 hover:text-[#E1306C] transition-colors"
+            >
+              <Instagram size={14} className="text-[#E1306C]" />
+              <span>@kodetocareer</span>
+            </a>
+            <a 
+              href="https://linkedin.com/company/kodetocareer" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center gap-2 hover:text-[#0A66C2] transition-colors"
+            >
+              <Linkedin size={14} className="text-[#0A66C2]" />
+              <span>KodeToCareer</span>
+            </a>
           </div>
         </div>
       </div>

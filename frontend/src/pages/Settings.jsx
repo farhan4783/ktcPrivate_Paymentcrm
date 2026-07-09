@@ -229,43 +229,21 @@ const Settings = () => {
             </div>
 
             <div className="border border-gray-100 rounded-[32px] p-6 bg-gray-50/10 scale-[0.95] origin-top shadow-inner">
-              <div className="flex justify-between items-start mb-6">
-                {/* Left side: Company Details & Website */}
-                <div className="space-y-1.5">
-                  <div>
-                    <h5 className="text-[9px] font-black text-[#1E1B4B] uppercase tracking-tight leading-none">
-                      {formData.companyName || 'Kode to Career'}
-                    </h5>
-                    {formData.phone && (
-                      <p className="text-[7px] text-gray-400 font-medium leading-none mt-1">
-                        Phone: {formData.phone}
-                      </p>
-                    )}
-                    {formData.address && (
-                      <p className="text-[7px] text-gray-400 font-medium leading-none mt-0.5 max-w-[150px] truncate">
-                        {formData.address}
-                      </p>
-                    )}
-                  </div>
-                  
-                  {/* Website link */}
-                  <div className="flex items-center gap-1 text-[7px] font-bold text-[#0EA5E9]">
-                    <Globe size={10} />
-                    <span>kodetocareer.com</span>
-                  </div>
-                </div>
-
-                {/* Right side: Mini Logo Box with Dark Tech Background */}
-                <div className="bg-[#090D1A] p-1.5 rounded-lg flex items-center justify-center border border-[#1E293B]/10 shrink-0">
+              <div className="flex justify-between items-center mb-6">
+                {/* Left side: Logo only */}
+                <div className="h-6 shrink-0">
                   <img 
                     src={formData.logoUrl || '/logo.jpeg'} 
                     alt="Logo" 
-                    className="h-6 w-auto object-contain"
+                    className="h-full w-auto object-contain"
                     onError={(e) => {
                       e.target.src = '/logo.jpeg';
                     }}
                   />
                 </div>
+
+                {/* Right side: Empty */}
+                <div></div>
               </div>
 
               <div className="text-center mb-6 relative">
@@ -303,6 +281,17 @@ const Settings = () => {
                 <p className="text-[9px] font-black text-secondary uppercase tracking-[0.1em] flex items-center justify-center gap-1.5">
                   <CheckCircle size={10} /> Fully Paid
                 </p>
+              </div>
+
+              {/* Mini Footer Contact Info */}
+              <div className="h-px bg-gray-100 w-full mt-4 mb-2"></div>
+              <div className="flex justify-center items-center gap-2.5 text-[6.5px] text-gray-500 font-bold tracking-tight flex-wrap">
+                {formData.phone && (
+                  <span>P: {formData.phone}</span>
+                )}
+                <span>W: kodetocareer.com</span>
+                <span>YT: @kodetocareer</span>
+                <span>IG: @kodetocareer</span>
               </div>
             </div>
           </div>
