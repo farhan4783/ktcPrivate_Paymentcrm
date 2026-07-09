@@ -10,7 +10,8 @@ import {
   Phone,
   ShieldCheck,
   CheckCircle,
-  Loader2
+  Loader2,
+  Globe
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
@@ -229,14 +230,41 @@ const Settings = () => {
 
             <div className="border border-gray-100 rounded-[32px] p-6 bg-gray-50/10 scale-[0.95] origin-top shadow-inner">
               <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-2">
-                  <div className="bg-primary p-1.5 rounded-lg">
-                    <ShieldCheck className="text-white" size={16} />
+                {/* Left side: Company Details & Website */}
+                <div className="space-y-1.5">
+                  <div>
+                    <h5 className="text-[9px] font-black text-[#1E1B4B] uppercase tracking-tight leading-none">
+                      {formData.companyName || 'Kode to Career'}
+                    </h5>
+                    {formData.phone && (
+                      <p className="text-[7px] text-gray-400 font-medium leading-none mt-1">
+                        Phone: {formData.phone}
+                      </p>
+                    )}
+                    {formData.address && (
+                      <p className="text-[7px] text-gray-400 font-medium leading-none mt-0.5 max-w-[150px] truncate">
+                        {formData.address}
+                      </p>
+                    )}
                   </div>
-                  <h5 className="text-[9px] font-black text-[#1E1B4B] w-28 leading-none uppercase">{formData.companyName || 'Kode to Career'}</h5>
+                  
+                  {/* Website link */}
+                  <div className="flex items-center gap-1 text-[7px] font-bold text-[#0EA5E9]">
+                    <Globe size={10} />
+                    <span>kodetocareer.com</span>
+                  </div>
                 </div>
-                <div className="text-[7px] text-right text-gray-400 font-bold leading-tight max-w-[120px] truncate">
-                  <p>{formData.address || 'info.kodetocareer.com'}</p>
+
+                {/* Right side: Mini Logo Box with Dark Tech Background */}
+                <div className="bg-[#090D1A] p-1.5 rounded-lg flex items-center justify-center border border-[#1E293B]/10 shrink-0">
+                  <img 
+                    src={formData.logoUrl || '/logo.jpeg'} 
+                    alt="Logo" 
+                    className="h-6 w-auto object-contain"
+                    onError={(e) => {
+                      e.target.src = '/logo.jpeg';
+                    }}
+                  />
                 </div>
               </div>
 

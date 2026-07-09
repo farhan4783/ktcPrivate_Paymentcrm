@@ -5,7 +5,11 @@ import {
   Download, 
   Printer,
   Loader2,
-  BookOpen
+  BookOpen,
+  Globe,
+  Youtube,
+  Instagram,
+  Linkedin
 } from 'lucide-react';
 import { Button } from './Button';
 import { cn } from '../../utils/cn';
@@ -81,17 +85,81 @@ const ReceiptPreview = ({ data = {
         >
           {/* Header Section */}
           <div className="flex justify-between items-start mb-6">
-            <div className="flex items-center gap-3">
-              <div className="bg-[#0EA5E9]/10 p-2.5 rounded-xl text-[#0EA5E9]">
-                <BookOpen size={24} />
-              </div>
+            {/* Left Side: Company Details, Website & Socials */}
+            <div className="space-y-3">
               <div>
-                <h5 className="text-sm font-black text-textPrimary leading-none uppercase tracking-tight">{settings?.companyName || 'Kode to Career'}</h5>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-1">{settings?.phone || ''}</p>
+                <h5 className="text-lg font-black text-textPrimary leading-none uppercase tracking-tight">
+                  {settings?.companyName || 'Kode to Career'}
+                </h5>
+                <div className="mt-2 space-y-1 text-xs text-gray-500 font-medium">
+                  {settings?.phone && (
+                    <p className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-600">
+                      <span>Phone:</span> {settings.phone}
+                    </p>
+                  )}
+                  {settings?.address && (
+                    <p className="text-[11px] text-gray-500 leading-tight max-w-[350px]">
+                      {settings.address}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Website & Social Links */}
+              <div className="flex flex-col space-y-1.5 pt-1">
+                <a 
+                  href="https://kodetocareer.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0EA5E9] hover:underline"
+                >
+                  <Globe size={14} />
+                  <span>kodetocareer.com</span>
+                </a>
+                <div className="flex items-center gap-4 text-gray-400">
+                  <a 
+                    href="https://www.youtube.com/@kodetocareer" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center gap-1 hover:text-[#FF0000] transition-colors"
+                  >
+                    <Youtube size={14} className="text-[#FF0000]" />
+                    <span className="text-[10px] font-bold">@kodetocareer</span>
+                  </a>
+                  <a 
+                    href="https://instagram.com/kodetocareer" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center gap-1 hover:text-[#E1306C] transition-colors"
+                  >
+                    <Instagram size={14} className="text-[#E1306C]" />
+                    <span className="text-[10px] font-bold">@kodetocareer</span>
+                  </a>
+                  <a 
+                    href="https://linkedin.com/company/kodetocareer" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center gap-1 hover:text-[#0A66C2] transition-colors"
+                  >
+                    <Linkedin size={14} className="text-[#0A66C2]" />
+                    <span className="text-[10px] font-bold">KodeToCareer</span>
+                  </a>
+                </div>
               </div>
             </div>
-            <div className="text-right text-xs font-medium text-gray-500 space-y-0.5 max-w-[300px]">
-              <p className="font-bold text-gray-900 text-[11px] leading-tight break-words">{settings?.address || 'info.kodetocareer.com'}</p>
+
+            {/* Right Side: Logo with Premium Dark/Black Background Box (to fit black logo.jpeg/k_logo.jpg perfectly) */}
+            <div className="flex flex-col items-end">
+              <div className="bg-[#090D1A] p-3 rounded-2xl shadow-md border border-[#1E293B]/20 flex items-center justify-center">
+                <img 
+                  src={settings?.logoUrl || '/logo.jpeg'} 
+                  alt="KodeToCareer Logo" 
+                  className="h-10 md:h-12 w-auto object-contain"
+                  onError={(e) => {
+                    e.target.src = '/logo.jpeg';
+                  }}
+                />
+              </div>
             </div>
           </div>
 
