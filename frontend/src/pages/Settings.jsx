@@ -289,9 +289,10 @@ const Settings = () => {
                 {formData.phone && (
                   <span>P: {formData.phone}</span>
                 )}
-                <span>W: kodetocareer.com</span>
-                <span>YT: @kodetocareer</span>
-                <span>IG: @kodetocareer</span>
+                <span>kodetocareer.com</span>
+                <span>YouTube</span>
+                <span>Instagram</span>
+                <span>LinkedIn</span>
               </div>
             </div>
           </div>

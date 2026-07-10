@@ -5,11 +5,7 @@ import {
   Download, 
   Printer,
   Loader2,
-  BookOpen,
-  Globe,
-  Youtube,
-  Instagram,
-  Linkedin
+  BookOpen
 } from 'lucide-react';
 import { Button } from './Button';
 import { cn } from '../../utils/cn';
@@ -259,12 +255,12 @@ const ReceiptPreview = ({ data = {
           <div className="h-px bg-gray-100 w-full mt-10 mb-6"></div>
           <div className="flex justify-center items-center gap-8 text-[12px] text-gray-500 font-bold tracking-tight flex-wrap">
             {settings?.phone && (
-              <span className="flex items-center gap-2">
+              <span className="whitespace-nowrap">
                 <span className="text-gray-400">Phone:</span> {settings.phone}
               </span>
             )}
             {settings?.address && (
-              <span className="flex items-center gap-2">
+              <span className="whitespace-nowrap">
                 <span className="text-gray-400">Address:</span> {settings.address}
               </span>
             )}
@@ -272,37 +268,33 @@ const ReceiptPreview = ({ data = {
               href="https://kodetocareer.com" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-2 hover:text-[#0EA5E9] transition-colors"
+              className="text-[#0EA5E9] hover:underline whitespace-nowrap"
             >
-              <Globe size={14} className="text-[#0EA5E9]" />
-              <span>kodetocareer.com</span>
+              kodetocareer.com
             </a>
             <a 
               href="https://www.youtube.com/@kodetocareer" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-2 hover:text-[#FF0000] transition-colors"
+              className="hover:underline text-gray-500 hover:text-gray-700 whitespace-nowrap"
             >
-              <Youtube size={14} className="text-[#FF0000]" />
-              <span>@kodetocareer</span>
+              YouTube
             </a>
             <a 
               href="https://instagram.com/kodetocareer" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-2 hover:text-[#E1306C] transition-colors"
+              className="hover:underline text-gray-500 hover:text-gray-700 whitespace-nowrap"
             >
-              <Instagram size={14} className="text-[#E1306C]" />
-              <span>@kodetocareer</span>
+              Instagram
             </a>
             <a 
               href="https://linkedin.com/company/kodetocareer" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="flex items-center gap-2 hover:text-[#0A66C2] transition-colors"
+              className="hover:underline text-gray-500 hover:text-gray-700 whitespace-nowrap"
             >
-              <Linkedin size={14} className="text-[#0A66C2]" />
-              <span>KodeToCareer</span>
+              LinkedIn
             </a>
           </div>
         </div>
