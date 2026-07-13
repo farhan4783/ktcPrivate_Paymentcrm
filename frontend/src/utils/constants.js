@@ -2,6 +2,9 @@
 export const COURSES = [
   'Web Development',
   'Data Science',
+  'Data Analytics',
+  'MLOps',
+  'DevOps',
   'UI/UX Design',
   'Full Stack Development',
   'Digital Marketing',
