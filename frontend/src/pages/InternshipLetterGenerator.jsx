@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { studentAPI } from '../services/api';
+import { COURSES } from '../utils/constants';
 import { useAuth } from '../context/AuthContext';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -15,10 +16,193 @@ import {
   Phone,
   Mail,
   Globe,
-  FileText
+  FileText,
+  BookOpen,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { toast } from 'react-hot-toast';
+
+// Course-specific presets for personalized internship letters
+export const COURSE_INTERNSHIP_PRESETS = {
+  'Full Stack Development': {
+    courseKey: 'Full Stack Development',
+    role: 'Full Stack Intern',
+    domainText: 'hands-on experience and professional development in full-stack web development (React.js, Node.js, Express.js, and MongoDB).',
+    supervisor: 'KodeToCareer Full Stack Development Team',
+    duties: [
+      'Developing and maintaining web applications using the MERN stack (MongoDB, Express, React, Node.js)',
+      'Building responsive user interfaces with React.js and modern CSS styling',
+      'Working with Node.js and Express.js for backend RESTful API development',
+      'Managing and integrating MongoDB database schemas and queries',
+      'Collaborating with the development team on real-world web projects',
+      'Debugging, testing, and optimizing application performance',
+      'Participating in team discussions, code reviews, and project planning'
+    ]
+  },
+  'Web Development': {
+    courseKey: 'Web Development',
+    role: 'Web Development Intern',
+    domainText: 'hands-on experience and professional development in modern web development, front-end architecture, and responsive web design.',
+    supervisor: 'KodeToCareer Web Development Team',
+    duties: [
+      'Designing and developing responsive, accessible web pages using HTML5, CSS3, and JavaScript',
+      'Building dynamic front-end web components using modern frameworks like React',
+      'Integrating RESTful APIs and handling asynchronous data flows',
+      'Optimizing web page performance, page load speeds, and cross-browser compatibility',
+      'Collaborating with designers to translate UI/UX wireframes into functional web pages',
+      'Testing web applications across mobile, tablet, and desktop viewports',
+      'Participating in daily stand-ups, code reviews, and project sprint planning'
+    ]
+  },
+  'Data Science': {
+    courseKey: 'Data Science',
+    role: 'Data Science Intern',
+    domainText: 'hands-on experience and professional development in data science, predictive modeling, machine learning, and data analytics.',
+    supervisor: 'KodeToCareer Data Science Team',
+    duties: [
+      'Performing exploratory data analysis (EDA) and data preprocessing on structured and unstructured datasets',
+      'Building, training, and evaluating machine learning models using Python, Scikit-Learn, and Pandas',
+      'Developing data pipelines for feature extraction, model inference, and predictive analytics',
+      'Creating interactive data visualizations and analytical reports using Matplotlib and Seaborn',
+      'Cleaning and validating raw datasets to ensure data quality and integrity',
+      'Documenting machine learning workflows, algorithms, and experimental results',
+      'Collaborating with data engineers and senior data scientists on production ML tasks'
+    ]
+  },
+  'Data Analytics': {
+    courseKey: 'Data Analytics',
+    role: 'Data Analyst Intern',
+    domainText: 'hands-on experience and professional development in data analysis, SQL querying, data visualization, and business intelligence.',
+    supervisor: 'KodeToCareer Analytics Team',
+    duties: [
+      'Extracting, transforming, and analyzing data from relational databases using complex SQL queries',
+      'Building interactive dashboards and visual reports using Power BI, Tableau, or Metabase',
+      'Analyzing business KPIs, customer trends, and operational metrics to derive actionable insights',
+      'Performing statistical analysis, cohort analysis, and data validation tasks',
+      'Automating repetitive data extraction and reporting workflows',
+      'Presenting key data insights and analytical findings to team leads and stakeholders',
+      'Assisting in maintaining data governance, accuracy, and reporting standards'
+    ]
+  },
+  'MLOps': {
+    courseKey: 'MLOps',
+    role: 'MLOps Engineer Intern',
+    domainText: 'hands-on experience and professional development in machine learning operations (MLOps), model deployment, and ML pipeline automation.',
+    supervisor: 'KodeToCareer MLOps & Infrastructure Team',
+    duties: [
+      'Designing and maintaining automated CI/CD pipelines for machine learning model deployment',
+      'Tracking machine learning experiments, artifacts, and model versions using MLflow or DVC',
+      'Containerizing ML applications using Docker and orchestrating services with Kubernetes',
+      'Implementing model monitoring systems to track data drift, latency, and model accuracy',
+      'Automating model retraining loops and deployment validation scripts',
+      'Managing cloud infrastructure (AWS/GCP/Azure) optimized for machine learning workloads',
+      'Collaborating with data science and DevOps teams to streamline production model deployment'
+    ]
+  },
+  'DevOps': {
+    courseKey: 'DevOps',
+    role: 'DevOps Engineer Intern',
+    domainText: 'hands-on experience and professional development in DevOps practices, cloud infrastructure management, containerization, and CI/CD pipelines.',
+    supervisor: 'KodeToCareer DevOps Team',
+    duties: [
+      'Designing and automating continuous integration and continuous deployment (CI/CD) pipelines',
+      'Containerizing software applications using Docker and managing clusters with Kubernetes',
+      'Provisioning and managing cloud infrastructure using Infrastructure as Code (Terraform/Ansible)',
+      'Setting up system monitoring, log aggregation, and alert configurations (Prometheus, Grafana)',
+      'Implementing security compliance, environment configurations, and access control management',
+      'Troubleshooting build failures, server logs, deployment issues, and network configurations',
+      'Collaborating with software engineering teams to optimize cloud resource efficiency'
+    ]
+  },
+  'UI/UX Design': {
+    courseKey: 'UI/UX Design',
+    role: 'UI/UX Designer Intern',
+    domainText: 'hands-on experience and professional development in user interface (UI) design, user experience (UX) research, wireframing, and interactive prototyping.',
+    supervisor: 'KodeToCareer Design Studio Team',
+    duties: [
+      'Conducting user research, target user interviews, and competitive design analysis',
+      'Creating low-fidelity wireframes, user flow diagrams, and high-fidelity interactive prototypes in Figma',
+      'Designing modern, responsive user interfaces following design systems and visual standards',
+      'Conducting usability testing sessions and gathering feedback for iterative design improvements',
+      'Collaborating closely with web and mobile developers to ensure design fidelity during implementation',
+      'Developing visual assets, icons, typography scales, and UI component libraries',
+      'Documenting UX guidelines, design tokens, and user journey specifications'
+    ]
+  },
+  'Digital Marketing': {
+    courseKey: 'Digital Marketing',
+    role: 'Digital Marketing Intern',
+    domainText: 'hands-on experience and professional development in digital marketing strategies, SEO, content creation, social media, and campaign analytics.',
+    supervisor: 'KodeToCareer Growth & Marketing Team',
+    duties: [
+      'Planning and executing digital marketing campaigns across Google Ads, Meta, and social media platforms',
+      'Conducting keyword research, on-page SEO optimization, and search engine ranking analysis',
+      'Creating engaging marketing copy, social media content, email newsletters, and ad creatives',
+      'Tracking and analyzing campaign performance metrics using Google Analytics and Meta Business Suite',
+      'Managing community engagement and social media channel interactions',
+      'Assisting in conversion rate optimization (CRO) and landing page A/B testing',
+      'Generating weekly marketing performance reports and strategy recommendations'
+    ]
+  },
+  'Python Programming': {
+    courseKey: 'Python Programming',
+    role: 'Python Developer Intern',
+    domainText: 'hands-on experience and professional development in Python programming, web backend frameworks, automation scripts, and database integration.',
+    supervisor: 'KodeToCareer Software Engineering Team',
+    duties: [
+      'Developing modular Python applications, CLI utilities, and automated task scripts',
+      'Building and maintaining backend RESTful APIs using Python frameworks like FastAPI or Django',
+      'Writing web scraping scripts, data processing utilities, and third-party API integrations',
+      'Writing unit tests and integration tests using PyTest to ensure code quality and stability',
+      'Designing relational database schemas and executing SQL queries with SQLAlchemy/ORM',
+      'Debugging issues, profiling code performance, and refactoring existing Python codebases',
+      'Participating in code reviews, technical architecture discussions, and team stand-ups'
+    ]
+  },
+  'Android App Development': {
+    courseKey: 'Android App Development',
+    role: 'Android App Developer Intern',
+    domainText: 'hands-on experience and professional development in Android mobile application development, UI design, API integration, and mobile architecture.',
+    supervisor: 'KodeToCareer Mobile Development Team',
+    duties: [
+      'Developing and testing native or cross-platform Android mobile applications using Kotlin or React Native',
+      'Designing intuitive, responsive mobile layouts adhering to Android Material Design guidelines',
+      'Integrating RESTful web services, JSON APIs, and offline local databases (Room/SQLite)',
+      'Implementing app state management, push notifications, and background service logic',
+      'Debugging mobile runtime issues, memory leaks, and performance bottlenecks across devices',
+      'Preparing app build releases, APK/AAB packaging, and testing on diverse Android OS versions',
+      'Collaborating with UI designers and backend developers for seamless mobile feature delivery'
+    ]
+  }
+};
+
+// Helper function to resolve course string to best matching preset
+export const getPresetForCourse = (courseInput) => {
+  if (!courseInput || typeof courseInput !== 'string') {
+    return COURSE_INTERNSHIP_PRESETS['Full Stack Development'];
+  }
+  const clean = courseInput.trim().toLowerCase();
+
+  if (clean.includes('data science')) return COURSE_INTERNSHIP_PRESETS['Data Science'];
+  if (clean.includes('data analytics') || clean.includes('analytics')) return COURSE_INTERNSHIP_PRESETS['Data Analytics'];
+  if (clean.includes('mlops')) return COURSE_INTERNSHIP_PRESETS['MLOps'];
+  if (clean.includes('devops')) return COURSE_INTERNSHIP_PRESETS['DevOps'];
+  if (clean.includes('ui') || clean.includes('ux') || clean.includes('design')) return COURSE_INTERNSHIP_PRESETS['UI/UX Design'];
+  if (clean.includes('digital marketing') || clean.includes('marketing')) return COURSE_INTERNSHIP_PRESETS['Digital Marketing'];
+  if (clean.includes('python')) return COURSE_INTERNSHIP_PRESETS['Python Programming'];
+  if (clean.includes('android') || clean.includes('mobile')) return COURSE_INTERNSHIP_PRESETS['Android App Development'];
+  if (clean.includes('web dev') || clean.includes('web development')) return COURSE_INTERNSHIP_PRESETS['Web Development'];
+  if (clean.includes('mern') || clean.includes('full stack')) return COURSE_INTERNSHIP_PRESETS['Full Stack Development'];
+
+  // Check exact key match
+  if (COURSE_INTERNSHIP_PRESETS[courseInput]) {
+    return COURSE_INTERNSHIP_PRESETS[courseInput];
+  }
+
+  // Fallback to Full Stack Development preset
+  return COURSE_INTERNSHIP_PRESETS['Full Stack Development'];
+};
 
 const InternshipLetterGenerator = () => {
   const { user } = useAuth();
@@ -30,27 +214,20 @@ const InternshipLetterGenerator = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Default duties
-  const defaultDuties = [
-    'Developing and maintaining web applications using the Full stack',
-    'Building responsive user interfaces with React.js',
-    'Working with Node.js and Express.js for backend development',
-    'Managing and integrating MongoDB databases',
-    'Collaborating with the development team on real-world projects',
-    'Debugging, testing, and optimizing application performance',
-    'Participating in team discussions, code reviews, and project planning'
-  ].join('\n');
+  const initialPreset = COURSE_INTERNSHIP_PRESETS['Full Stack Development'];
 
   const [formData, setFormData] = useState({
     studentName: '',
-    role: 'Full Stack Intern',
+    selectedCourse: 'Full Stack Development',
+    role: initialPreset.role,
+    domainText: initialPreset.domainText,
     offerDate: new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' }),
     startDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' }),
     endDate: new Date(Date.now() + 62 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' }),
-    supervisor: 'KodeToCareer development team',
+    supervisor: initialPreset.supervisor,
     senderName: 'Mohd Arbaaz',
     senderRole: 'CEO, Founder',
-    dutiesText: defaultDuties
+    dutiesText: initialPreset.duties.join('\n')
   });
 
   useEffect(() => {
@@ -68,14 +245,31 @@ const InternshipLetterGenerator = () => {
     fetchStudents();
   }, []);
 
-  const handleSelectStudent = (student) => {
+  const applyCoursePreset = (courseName, studentName = null) => {
+    const preset = getPresetForCourse(courseName);
     setFormData(prev => ({
       ...prev,
-      studentName: student.name
+      ...(studentName !== null ? { studentName } : {}),
+      selectedCourse: preset.courseKey,
+      role: preset.role,
+      domainText: preset.domainText,
+      supervisor: preset.supervisor,
+      dutiesText: preset.duties.join('\n')
     }));
+  };
+
+  const handleSelectStudent = (student) => {
+    const studentCourse = student.course || 'Full Stack Development';
+    applyCoursePreset(studentCourse, student.name);
     setSearchTerm(student.name);
     setShowDropdown(false);
-    toast.success(`Selected student: ${student.name}`);
+    toast.success(`Selected ${student.name} (${studentCourse})`);
+  };
+
+  const handleCourseChange = (e) => {
+    const selectedCourse = e.target.value;
+    applyCoursePreset(selectedCourse);
+    toast.success(`Loaded ${selectedCourse} preset`);
   };
 
   const handleChange = (e) => {
@@ -196,7 +390,7 @@ const InternshipLetterGenerator = () => {
             Internship Letter Generator
           </h2>
           <p className="text-textSecondary text-xs mt-1">
-            Generate and export official internship offer letters formatted exactly like the KodeToCareer template.
+            Generate course-personalized internship offer letters for every track (MERN, Data Science, Data Analytics, MLOps, DevOps, UI/UX, etc.) with identical design layout.
           </p>
         </div>
         <div className="flex gap-3">
@@ -292,7 +486,31 @@ const InternshipLetterGenerator = () => {
               )}
             </div>
 
-            {/* Manual Name Edit (if needed) */}
+            {/* Course / Domain Selection Preset */}
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Course / Track Preset</label>
+                <span className="text-[10px] font-extrabold text-[#0EA5E9] flex items-center gap-1">
+                  <Sparkles size={10} /> Auto-loads course text
+                </span>
+              </div>
+              <div className="relative">
+                <select
+                  name="selectedCourse"
+                  value={formData.selectedCourse}
+                  onChange={handleCourseChange}
+                  className="w-full bg-blue-50/50 border border-blue-100 rounded-xl py-2.5 px-4 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
+                >
+                  {COURSES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Manual Name Edit */}
             <div className="space-y-1">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Student Name (On Letter)</label>
               <input
@@ -307,12 +525,12 @@ const InternshipLetterGenerator = () => {
 
             {/* Internship Role */}
             <div className="space-y-1">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Internship Role</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Internship Role Title</label>
               <input
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                placeholder="e.g. Full Stack Intern"
+                placeholder="e.g. Data Science Intern / Full Stack Intern"
                 className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               />
             </div>
@@ -353,25 +571,25 @@ const InternshipLetterGenerator = () => {
 
             {/* Supervisor */}
             <div className="space-y-1">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Primary Supervisor</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Primary Supervisor / Team</label>
               <input
                 name="supervisor"
                 value={formData.supervisor}
                 onChange={handleChange}
-                placeholder="KodeToCareer development team"
+                placeholder="KodeToCareer Data Science Team"
                 className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-4 text-sm font-bold focus:ring-2 focus:ring-primary/20 outline-none transition-all"
               />
             </div>
 
             {/* Custom Duties (Textarea, line by line) */}
             <div className="space-y-1">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Responsibilities (One per line)</label>
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Course Responsibilities (One per line)</label>
               <textarea
                 name="dutiesText"
                 value={formData.dutiesText}
                 onChange={handleChange}
                 rows={6}
-                placeholder="Enter duties (one line per bullet)..."
+                placeholder="Enter course duties (one line per bullet)..."
                 className="w-full bg-gray-50 border border-gray-100 rounded-xl py-2 px-4 text-xs font-semibold focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
               />
             </div>
@@ -409,7 +627,10 @@ const InternshipLetterGenerator = () => {
         {/* Preview Panel (Right) */}
         <div className="xl:col-span-8 space-y-4">
           <div className="bg-gray-50 border border-gray-100 p-4 rounded-2xl flex items-center justify-between text-xs text-textSecondary font-bold">
-            <span>Offer Letter Preview (794px × 1123px portrait, scaled)</span>
+            <span className="flex items-center gap-2">
+              <Sparkles size={14} className="text-[#0EA5E9]" />
+              Offer Letter Preview — Personalized for <span className="text-[#0EA5E9] font-black">{formData.selectedCourse}</span>
+            </span>
             <span>PDF exports at high-quality A4 dimensions</span>
           </div>
 
@@ -473,12 +694,12 @@ const InternshipLetterGenerator = () => {
                     Dear {getFirstName()},
                   </div>
 
-                  {/* Body Paragraphs */}
+                  {/* Body Paragraphs - Course Personalized */}
                   <p>
-                    I am pleased to confirm your acceptance of an internship as a <span className="font-bold text-gray-900">{formData.role}</span> at KodeToCareer. This internship is designed to provide you with hands-on experience and professional development in full-stack web development. As part of your role, your duties and responsibilities will include but are not limited to:
+                    I am pleased to confirm your acceptance of an internship as a <span className="font-bold text-gray-900">{formData.role}</span> at KodeToCareer. This internship is designed to provide you with {formData.domainText || 'hands-on experience and professional development in your chosen field'}. As part of your role, your duties and responsibilities will include but are not limited to:
                   </p>
 
-                  {/* Duties List */}
+                  {/* Course Duties List */}
                   <ul className="list-disc pl-5 space-y-1.5 text-gray-600">
                     {getDutiesList().map((duty, idx) => (
                       <li key={idx}>{duty}</li>
@@ -486,7 +707,7 @@ const InternshipLetterGenerator = () => {
                   </ul>
 
                   <p>
-                    Your first day of work will be <span className="font-bold text-gray-950">{formData.startDate}</span>, and the internship is expected to conclude on <span className="font-bold text-gray-950">{formData.endDate}</span>. During this period, you will gain practical exposure to industry-level development workflows and modern web technologies.
+                    Your first day of work will be <span className="font-bold text-gray-950">{formData.startDate}</span>, and the internship is expected to conclude on <span className="font-bold text-gray-950">{formData.endDate}</span>. During this period, you will gain practical exposure to industry-level development workflows and modern technologies.
                   </p>
 
                   <p>
